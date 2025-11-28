@@ -6,4 +6,5 @@ public abstract class Animation
     public abstract void StartAnimation();
     public abstract void Draw();
     public abstract bool IsFinish();
+    public abstract Animation Clone();
 }

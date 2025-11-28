@@ -17,6 +17,7 @@ class Program
             songPlaying.Draw();
             Raylib.EndDrawing();
             songPlaying.HandleInput();
+            songPlaying.HandleAudio();
         }
         songPlaying.UnloadTextures();
         songPlaying.UnloadSounds();

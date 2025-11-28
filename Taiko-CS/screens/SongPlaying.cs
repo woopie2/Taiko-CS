@@ -10,13 +10,15 @@ public class SongPlaying : Screen
 {
     private Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
     private Dictionary<string, Sound> sounds = new Dictionary<string, Sound>();
-    private Dictionary<string, Sound> soundsToPlay = new Dictionary<string, Sound>();
+    private List<Sound> playingSounds = new  List<Sound>();
     private bool isRightDonPressed;
     private bool isLeftDonPressed;
     private bool isRightKaPressed;
     private bool isLeftKaPressed;
     private Difficulty difficulty;
-    private List<Animation.Animation> runningAnimations = new List<Animation.Animation>();
+    private List<Animation.Animation> runningForegroundAnimations = new List<Animation.Animation>();
+    private List<Animation.Animation> runningBackgroundAnimations = new List<Animation.Animation>();
+    private bool areAnimationsInitialized = false;
     public SongPlaying(Difficulty difficulty)
     {
         this.difficulty = difficulty;
@@ -59,8 +61,6 @@ public class SongPlaying : Screen
         string gameSoundFolder = "./ressources/Sounds";
         Sound sound = Raylib.LoadSound($"{gameSoundFolder}/{soundPath}");
         sounds.Add(soundName, sound);
-        Sound soundAllias = Raylib.LoadSoundAlias(sound);
-        soundsToPlay.Add(soundName, soundAllias);
     }
 
     public override void UnloadTextures()
@@ -79,22 +79,29 @@ public class SongPlaying : Screen
         }
     }
 
-    private void DrawAnimations()
+    private void DrawForegroundAnimations()
     {
-        foreach (Animation.Animation animation in runningAnimations)
+        foreach (Animation.Animation animation in runningForegroundAnimations)
         {
             animation.Draw();
         }
     }
 
-    private void UpdateAnimations()
+    private void DrawBackgroundAnimations()
+    {
+        foreach (Animation.Animation animation in runningBackgroundAnimations)
+        {
+            animation.Draw();
+        }
+    }
+
+    private void UpdateForegroundAnimations()
     {
         List<Animation.Animation> finishedAnimations = new List<Animation.Animation>();
-        foreach (Animation.Animation animation in runningAnimations)
+        foreach (Animation.Animation animation in runningForegroundAnimations)
         {
             if (animation.IsFinish())
             {
-                Console.WriteLine("Animation finished!");
                 finishedAnimations.Add(animation);
                 continue;
             }
@@ -104,7 +111,36 @@ public class SongPlaying : Screen
 
         foreach (Animation.Animation animation in finishedAnimations)
         {
-            runningAnimations.Remove(animation);
+            runningForegroundAnimations.Remove(animation);
+        }
+    }
+    
+    private void UpdateBackgroundAnimations()
+    {
+        List<Animation.Animation> finishedAnimations = new List<Animation.Animation>();
+        List<Animation.Animation> restartedAnimations = new List<Animation.Animation>();
+        foreach (Animation.Animation animation in runningBackgroundAnimations)
+        {
+            if (animation.IsFinish())
+            {
+                finishedAnimations.Add(animation);
+                Animation.Animation restartedAnimation = animation.Clone();
+                restartedAnimations.Add(restartedAnimation);
+                restartedAnimation.StartAnimation();
+                continue;
+            }
+            animation.UpdateAnimation();
+            
+        }
+
+        foreach (Animation.Animation animation in finishedAnimations)
+        {
+            runningBackgroundAnimations.Remove(animation);
+        }
+
+        foreach (Animation.Animation animation in restartedAnimations)
+        {
+            runningBackgroundAnimations.Add(animation);
         }
     }
     
@@ -160,7 +196,7 @@ public class SongPlaying : Screen
             int height = taikoDon.Height;
             Animation.Animation leftDonAnimation = new FadeOutAnimation(taikoDon, 0.0625, new Rectangle(0, 0, width, height), new Rectangle(x, y, width, height), 0.125);
             leftDonAnimation.StartAnimation();
-            runningAnimations.Add(leftDonAnimation);
+            runningForegroundAnimations.Add(leftDonAnimation);
         }
 
         if (rightDonPressed)
@@ -170,7 +206,7 @@ public class SongPlaying : Screen
             int height = taikoDon.Height;
             Animation.Animation rightDonAnimation = new FadeOutAnimation(taikoDon, 0.0625, new Rectangle(width, 0, width, height), new Rectangle(x + width, y, width, height), 0.125);
             rightDonAnimation.StartAnimation();
-            runningAnimations.Add(rightDonAnimation);
+            runningForegroundAnimations.Add(rightDonAnimation);
         }
 
         if (leftKaPressed)
@@ -180,7 +216,7 @@ public class SongPlaying : Screen
             int height = taikoKa.Height;
             Animation.Animation leftKaAnimation = new FadeOutAnimation(taikoKa, 0.0625, new Rectangle(0, 0, width, height), new Rectangle(x, y, width, height),0.125);
             leftKaAnimation.StartAnimation();
-            runningAnimations.Add(leftKaAnimation);
+            runningForegroundAnimations.Add(leftKaAnimation);
         }
 
         if (rightKaPressed)
@@ -190,17 +226,46 @@ public class SongPlaying : Screen
             int height = taikoKa.Height;
             Animation.Animation rightKaAnimation = new FadeOutAnimation(taikoKa, 0.0625, new Rectangle(width, 0, width, height), new Rectangle(x + width, y, width, height),0.125);
             rightKaAnimation.StartAnimation();
-            runningAnimations.Add(rightKaAnimation);
+            runningForegroundAnimations.Add(rightKaAnimation);
         }
+    }
+
+    private void InitliazeAnimations()
+    {
+        Animation.Animation upBackgroundScrolling0 = new HorizontalMovingAnimation(textures["UpBackground"], -492 * 1, -492 * 0, 0, 5);
+        runningBackgroundAnimations.Add(upBackgroundScrolling0);
+        upBackgroundScrolling0.StartAnimation();
+        
+        Animation.Animation upBackgroundScrolling1 = new HorizontalMovingAnimation(textures["UpBackground"], 492*0, 1 * 492, 0, 5);
+        runningBackgroundAnimations.Add(upBackgroundScrolling1);
+        upBackgroundScrolling1.StartAnimation();
+        
+        Animation.Animation upBackgroundScrolling2 = new HorizontalMovingAnimation(textures["UpBackground"], 492*1, 2 * 492, 0, 5);
+        runningBackgroundAnimations.Add(upBackgroundScrolling2);
+        upBackgroundScrolling2.StartAnimation();
+        
+        Animation.Animation upBackgroundScrolling3 = new HorizontalMovingAnimation(textures["UpBackground"], 492*2, 3 * 492, 0, 5);
+        runningBackgroundAnimations.Add(upBackgroundScrolling3);
+        upBackgroundScrolling3.StartAnimation();
+        
+        Animation.Animation upBackgroundScrolling4 = new HorizontalMovingAnimation(textures["UpBackground"], 492*3, 4 * 492, 0, 5);
+        runningBackgroundAnimations.Add(upBackgroundScrolling4);
+        upBackgroundScrolling4.StartAnimation();
+        areAnimationsInitialized = true;
     }
     
     public override void Draw()
     {
+        if (!areAnimationsInitialized)
+        {
+            InitliazeAnimations();
+        }
         Raylib.ClearBackground(Color.White);
-        DrawBackground();
+        DrawBackgroundAnimations();
         DrawPlayingZone(0, 276 - 72);
-        DrawAnimations();
-        UpdateAnimations();
+        DrawForegroundAnimations();
+        UpdateForegroundAnimations();
+        UpdateBackgroundAnimations();
     }
 
     public override void HandleInput()
@@ -208,7 +273,9 @@ public class SongPlaying : Screen
         if (Raylib.IsKeyPressed(KeyboardKey.F))
         {
             isLeftDonPressed = true;
-            Raylib.PlaySound(soundsToPlay["Don"]);
+            Sound sound = Raylib.LoadSoundAlias(sounds["Don"]);
+            playingSounds.Add(sound);
+            Raylib.PlaySound(sound);
         }
         else
         {
@@ -218,7 +285,9 @@ public class SongPlaying : Screen
         if (Raylib.IsKeyPressed(KeyboardKey.J))
         {
             isRightDonPressed = true; 
-            Raylib.PlaySound(soundsToPlay["Don"]);
+            Sound sound = Raylib.LoadSoundAlias(sounds["Don"]);
+            playingSounds.Add(sound);
+            Raylib.PlaySound(sound);
         }
         else
         {
@@ -228,7 +297,9 @@ public class SongPlaying : Screen
         if (Raylib.IsKeyPressed(KeyboardKey.D))
         {
             isLeftKaPressed = true;
-            Raylib.PlaySound(soundsToPlay["Ka"]);
+            Sound sound = Raylib.LoadSoundAlias(sounds["Ka"]);
+            playingSounds.Add(sound);
+            Raylib.PlaySound(sound);
         }
         else
         {
@@ -238,7 +309,9 @@ public class SongPlaying : Screen
         if (Raylib.IsKeyPressed(KeyboardKey.K))
         {
             isRightKaPressed = true;
-            Raylib.PlaySound(soundsToPlay["Ka"]);
+            Sound sound = Raylib.LoadSoundAlias(sounds["Ka"]);
+            playingSounds.Add(sound);
+            Raylib.PlaySound(sound);
         }
         else
         {
@@ -246,5 +319,17 @@ public class SongPlaying : Screen
         }
         
 
+    }
+
+    public override void HandleAudio()
+    {
+        for (int i = playingSounds.Count - 1; i >= 0; i--)
+        {
+            if (!Raylib.IsSoundPlaying(playingSounds[i]))
+            {
+                Raylib.UnloadSoundAlias(playingSounds[i]);
+                playingSounds.RemoveAt(i);
+            }
+        }
     }
 }

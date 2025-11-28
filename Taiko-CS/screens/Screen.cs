@@ -8,4 +8,5 @@ public abstract class Screen
     public abstract void UnloadTextures();
     public abstract void Draw();
     public abstract void HandleInput();
+    public abstract void HandleAudio();
 }

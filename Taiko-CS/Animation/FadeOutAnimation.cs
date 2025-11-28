@@ -97,4 +97,9 @@ public class FadeOutAnimation : Animation
     {
         return alpha == 0;
     }
+
+    public override Animation Clone()
+    {
+        return new FadeOutAnimation(texture, duration, src, dst);
+    }
 }
