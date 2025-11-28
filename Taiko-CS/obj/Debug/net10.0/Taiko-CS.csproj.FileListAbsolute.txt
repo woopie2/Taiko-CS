@@ -1660,10 +1660,11 @@ C:\Users\noahm\Documents\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressource
 C:\Users\noahm\Documents\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Sounds\SongDecide_AI.ogg
 C:\Users\noahm\Documents\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Sounds\Taiko\Adlib.ogg
 C:\Users\noahm\Documents\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Sounds\Taiko\clap.ogg
-C:\Users\noahm\Documents\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Sounds\Taiko\dong.ogg
-C:\Users\noahm\Documents\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Sounds\Taiko\ka.ogg
 C:\Users\noahm\Documents\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Sounds\Tower\Tower_Dropout.ogg
 C:\Users\noahm\Documents\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Sounds\Tower\Tower_TopReached_FullCombo.ogg
 C:\Users\noahm\Documents\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Sounds\Tower\Tower_TopReached_Pass.ogg
 C:\Users\noahm\Documents\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Sounds\Tower\Tower_TopReached_Perfect.ogg
 C:\Users\noahm\Documents\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Sounds\Traning Skip.ogg
+C:\Users\noahm\Documents\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Sounds\Taiko\dong.wav
+C:\Users\noahm\Documents\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Sounds\Taiko\ka.wav
+C:\Users\noahm\Documents\Projet c#\Taiko-CS\Taiko-CS\obj\Debug\net10.0\Taiko-CS.sourcelink.json

@@ -9,6 +9,8 @@ namespace Taiko_CS.screens;
 public class SongPlaying : Screen
 {
     private Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
+    private Dictionary<string, Sound> sounds = new Dictionary<string, Sound>();
+    private Dictionary<string, Sound> soundsToPlay = new Dictionary<string, Sound>();
     private bool isRightDonPressed;
     private bool isLeftDonPressed;
     private bool isRightKaPressed;
@@ -19,6 +21,7 @@ public class SongPlaying : Screen
     {
         this.difficulty = difficulty;
         LoadTextures();
+        LoadSounds();
     }
     public override void LoadTextures()
     {
@@ -37,6 +40,12 @@ public class SongPlaying : Screen
         LoadTexture("Ura", "4_CourseSymbol/Edit.png");
     }
 
+    public override void LoadSounds()
+    {
+        LoadSound("Don", "Taiko/dong.wav");
+        LoadSound("Ka", "Taiko/ka.wav");
+    }
+    
     private void LoadTexture(string textureName, string texturePath)
     {
         string gameTextureFolder = "./ressources/Graphics/5_Game";
@@ -45,11 +54,28 @@ public class SongPlaying : Screen
         textures.Add(textureName, texture);
     }
 
+    private void LoadSound(string soundName, string soundPath)
+    {
+        string gameSoundFolder = "./ressources/Sounds";
+        Sound sound = Raylib.LoadSound($"{gameSoundFolder}/{soundPath}");
+        sounds.Add(soundName, sound);
+        Sound soundAllias = Raylib.LoadSoundAlias(sound);
+        soundsToPlay.Add(soundName, soundAllias);
+    }
+
     public override void UnloadTextures()
     {
         foreach (KeyValuePair<string, Texture2D> texture in textures)
         {
             Raylib.UnloadTexture(texture.Value);
+        }
+    }
+
+    public override void UnloadSounds()
+    {
+        foreach (KeyValuePair<string, Sound> sound in sounds)
+        {
+            Raylib.UnloadSound(sound.Value);
         }
     }
 
@@ -179,9 +205,46 @@ public class SongPlaying : Screen
 
     public override void HandleInput()
     {
-        isLeftDonPressed = Raylib.IsKeyPressed(KeyboardKey.F);
-        isRightDonPressed = Raylib.IsKeyPressed(KeyboardKey.J);
-        isLeftKaPressed = Raylib.IsKeyPressed(KeyboardKey.D);
-        isRightKaPressed = Raylib.IsKeyPressed(KeyboardKey.K);
+        if (Raylib.IsKeyPressed(KeyboardKey.F))
+        {
+            isLeftDonPressed = true;
+            Raylib.PlaySound(soundsToPlay["Don"]);
+        }
+        else
+        {
+            isLeftDonPressed = false;
+        }
+
+        if (Raylib.IsKeyPressed(KeyboardKey.J))
+        {
+            isRightDonPressed = true; 
+            Raylib.PlaySound(soundsToPlay["Don"]);
+        }
+        else
+        {
+            isRightDonPressed = false;
+        }
+
+        if (Raylib.IsKeyPressed(KeyboardKey.D))
+        {
+            isLeftKaPressed = true;
+            Raylib.PlaySound(soundsToPlay["Ka"]);
+        }
+        else
+        {
+            isLeftKaPressed = false;
+        }
+        
+        if (Raylib.IsKeyPressed(KeyboardKey.K))
+        {
+            isRightKaPressed = true;
+            Raylib.PlaySound(soundsToPlay["Ka"]);
+        }
+        else
+        {
+            isRightKaPressed = false;
+        }
+        
+
     }
 }

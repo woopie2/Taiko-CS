@@ -9,6 +9,7 @@ class Program
     static void Main(string[] args)
     {
         Raylib.InitWindow(1920, 1080, "Taiko!");
+        Raylib.InitAudioDevice();
         Screen songPlaying = new SongPlaying(Difficulty.ONI); 
         while (!Raylib.WindowShouldClose())
         {
@@ -18,5 +19,7 @@ class Program
             songPlaying.HandleInput();
         }
         songPlaying.UnloadTextures();
+        songPlaying.UnloadSounds();
+        Raylib.CloseAudioDevice();
     }
 }
