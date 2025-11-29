@@ -2297,18 +2297,6 @@ D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Ba
 D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Dan\Up\0\4.png
 D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Dan\Up\0\5.png
 D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Dan\Up\0\Script.lua
-D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Normal\Down\0\Base.png
-D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Normal\Down\0\Clear_Back.png
-D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Normal\Down\0\Clear_Cloud_Footer.png
-D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Normal\Down\0\Clear_Cloud_Header.png
-D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Normal\Down\0\Clear_Cloud_Scroll_Left.png
-D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Normal\Down\0\Clear_Cloud_Scroll_Right.png
-D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Normal\Down\0\Clear_Koma_Left.png
-D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Normal\Down\0\Clear_Koma_Red.png
-D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Normal\Down\0\Clear_Koma_Right.png
-D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Normal\Down\0\Clear_Scroll_Down.png
-D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Normal\Down\0\Clear_Scroll_Up.png
-D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Normal\Down\0\Light.png
 D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Normal\Down\0\Script.lua
 D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Normal\Down\Clouds\Down.png
 D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Normal\Down\Clouds\Down_Clear.png
@@ -3338,3 +3326,5 @@ D:\Projet c#\Taiko-CS\Taiko-CS\obj\Debug\net10.0\refint\Taiko-CS.dll
 D:\Projet c#\Taiko-CS\Taiko-CS\obj\Debug\net10.0\Taiko-CS.pdb
 D:\Projet c#\Taiko-CS\Taiko-CS\obj\Debug\net10.0\Taiko-CS.genruntimeconfig.cache
 D:\Projet c#\Taiko-CS\Taiko-CS\obj\Debug\net10.0\ref\Taiko-CS.dll
+D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Normal\Down\0\0.png
+D:\Projet c#\Taiko-CS\Taiko-CS\bin\Debug\net10.0\ressources\Graphics\5_Game\5_Background\Normal\Down\0\1.png

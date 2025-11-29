@@ -21,7 +21,7 @@ public class HorizontalMovingAnimation : Animation
         this.startX = startX;
         currentX = startX;
         this.y = y;
-        timeInterval = duration / (endX - startX) ;
+        timeInterval = duration / (Math.Max(startX, endX) - Math.Min(startX, endX)) ;
         this.duration = duration;
     }
     
@@ -44,7 +44,7 @@ public class HorizontalMovingAnimation : Animation
 
         if (Raylib.GetTime() - currentTime >= timeInterval)
         {
-            currentX++;
+            currentX--;
             currentTime = Raylib.GetTime();
         }
     }

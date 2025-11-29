@@ -40,6 +40,9 @@ public class SongPlaying : Screen
         LoadTexture("Hard", "4_CourseSymbol/Hard.png");
         LoadTexture("Oni", "4_CourseSymbol/Oni.png");
         LoadTexture("Ura", "4_CourseSymbol/Edit.png");
+        LoadTexture("DownBackground", "5_Background/Normal/Down/0/0.png");
+        LoadTexture("Footer", "8_Footer/0.png");
+        LoadTexture("DownBackgroundLights", "5_Background/Normal/Down/0/1.png");
     }
 
     public override void LoadSounds()
@@ -144,18 +147,10 @@ public class SongPlaying : Screen
         }
     }
     
-    private void DrawBackground()
-    {
-        Raylib.DrawTexture(textures["UpBackground"], 0 * 492, 0, Color.White);
-        Raylib.DrawTexture(textures["UpBackground"], 1 * 492, 0, Color.White);
-        Raylib.DrawTexture(textures["UpBackground"], 2 * 492, 0, Color.White);
-        Raylib.DrawTexture(textures["UpBackground"], 3 * 492, 0, Color.White);
-    }
-    
     private void DrawPlayingZone(int x, int y)
     {
         Raylib.DrawTexture(textures["LeftSideBackground"], x, y + 72, Color.White);
-        Raylib.DrawTexture(textures["PlayingZoneFrame"], x + textures["LeftSideBackground"].Width, y, Color.White);
+        Raylib.DrawTexture(textures["PlayingZoneFrame"], x + textures["LeftSideBackground"].Width - 1, y, Color.White);
         DrawTaiko(isLeftKaPressed, isRightKaPressed, isLeftDonPressed, isRightDonPressed, x + 499 - 180 - 10, y + textures["Taiko"].Height / 2);
         Raylib.DrawTexturePro(textures["LaneUpBackground"], new Rectangle(0, 0, textures["LaneUpBackground"].Width, textures["LaneUpBackground"].Height), new Rectangle(x + textures["LeftSideBackground"].Width, y + 83, textures["PlayingZoneFrame"].Width, textures["LaneUpBackground"].Height) ,new Vector2(0, 0) , 0, Color.White );
         Raylib.DrawTexturePro(textures["LaneDownBackground"], new Rectangle(0, 0, textures["LaneDownBackground"].Width, textures["LaneDownBackground"].Height), new Rectangle(x + textures["LeftSideBackground"].Width, y + 83 + textures["LaneUpBackground"].Height + 6, textures["PlayingZoneFrame"].Width, textures["LaneDownBackground"].Height) ,new Vector2(0, 0) , 0, Color.White );
@@ -188,13 +183,14 @@ public class SongPlaying : Screen
     
     private void DrawTaiko(bool leftKaPressed, bool rightKaPressed, bool leftDonPressed, bool rightDonPressed, int x, int y)
     {
+        double taikoHitViewierTime = 0.1875;
         Raylib.DrawTexture(textures["Taiko"], x, y, Color.White);
         if (leftDonPressed)
         {
             Texture2D taikoDon = textures["TaikoDon"];
             int width = taikoDon.Width / 2;
             int height = taikoDon.Height;
-            Animation.Animation leftDonAnimation = new FadeOutAnimation(taikoDon, 0.0625, new Rectangle(0, 0, width, height), new Rectangle(x, y, width, height), 0.125);
+            Animation.Animation leftDonAnimation = new InstantDisappearAnimation(taikoDon, taikoHitViewierTime, new Rectangle(0, 0, width, height), new Rectangle(x, y, width, height));
             leftDonAnimation.StartAnimation();
             runningForegroundAnimations.Add(leftDonAnimation);
         }
@@ -204,7 +200,8 @@ public class SongPlaying : Screen
             Texture2D taikoDon = textures["TaikoDon"];
             int width = taikoDon.Width / 2;
             int height = taikoDon.Height;
-            Animation.Animation rightDonAnimation = new FadeOutAnimation(taikoDon, 0.0625, new Rectangle(width, 0, width, height), new Rectangle(x + width, y, width, height), 0.125);
+            
+            Animation.Animation rightDonAnimation = new InstantDisappearAnimation(taikoDon, taikoHitViewierTime, new Rectangle(width, 0, width, height), new Rectangle(x + width, y, width, height));
             rightDonAnimation.StartAnimation();
             runningForegroundAnimations.Add(rightDonAnimation);
         }
@@ -214,7 +211,7 @@ public class SongPlaying : Screen
             Texture2D taikoKa = textures["TaikoKa"];
             int width = taikoKa.Width / 2;
             int height = taikoKa.Height;
-            Animation.Animation leftKaAnimation = new FadeOutAnimation(taikoKa, 0.0625, new Rectangle(0, 0, width, height), new Rectangle(x, y, width, height),0.125);
+            Animation.Animation leftKaAnimation = new InstantDisappearAnimation(taikoKa, taikoHitViewierTime, new Rectangle(0, 0, width, height), new Rectangle(x, y, width, height));
             leftKaAnimation.StartAnimation();
             runningForegroundAnimations.Add(leftKaAnimation);
         }
@@ -224,7 +221,7 @@ public class SongPlaying : Screen
             Texture2D taikoKa = textures["TaikoKa"];
             int width = taikoKa.Width / 2;
             int height = taikoKa.Height;
-            Animation.Animation rightKaAnimation = new FadeOutAnimation(taikoKa, 0.0625, new Rectangle(width, 0, width, height), new Rectangle(x + width, y, width, height),0.125);
+            Animation.Animation rightKaAnimation = new InstantDisappearAnimation(taikoKa, taikoHitViewierTime, new Rectangle(width, 0, width, height), new Rectangle(x + width, y, width, height));
             rightKaAnimation.StartAnimation();
             runningForegroundAnimations.Add(rightKaAnimation);
         }
@@ -232,26 +229,43 @@ public class SongPlaying : Screen
 
     private void InitliazeAnimations()
     {
-        Animation.Animation upBackgroundScrolling0 = new HorizontalMovingAnimation(textures["UpBackground"], -492 * 1, -492 * 0, 0, 5);
+        int upBackgroundScrollingTime = 10;
+        double lightCycleDuration = 0.25;
+        Animation.Animation upBackgroundScrolling0 = new HorizontalMovingAnimation(textures["UpBackground"], 492 * 4, 492 * 3, 0, upBackgroundScrollingTime);
         runningBackgroundAnimations.Add(upBackgroundScrolling0);
         upBackgroundScrolling0.StartAnimation();
         
-        Animation.Animation upBackgroundScrolling1 = new HorizontalMovingAnimation(textures["UpBackground"], 492*0, 1 * 492, 0, 5);
+        Animation.Animation upBackgroundScrolling1 = new HorizontalMovingAnimation(textures["UpBackground"], 492* 0, -1 * 492, 0, upBackgroundScrollingTime);
         runningBackgroundAnimations.Add(upBackgroundScrolling1);
         upBackgroundScrolling1.StartAnimation();
         
-        Animation.Animation upBackgroundScrolling2 = new HorizontalMovingAnimation(textures["UpBackground"], 492*1, 2 * 492, 0, 5);
+        Animation.Animation upBackgroundScrolling2 = new HorizontalMovingAnimation(textures["UpBackground"], 492*1, 0 * 492, 0, upBackgroundScrollingTime);
         runningBackgroundAnimations.Add(upBackgroundScrolling2);
         upBackgroundScrolling2.StartAnimation();
         
-        Animation.Animation upBackgroundScrolling3 = new HorizontalMovingAnimation(textures["UpBackground"], 492*2, 3 * 492, 0, 5);
+        Animation.Animation upBackgroundScrolling3 = new HorizontalMovingAnimation(textures["UpBackground"], 492*2, 1 * 492, 0, upBackgroundScrollingTime);
         runningBackgroundAnimations.Add(upBackgroundScrolling3);
         upBackgroundScrolling3.StartAnimation();
         
-        Animation.Animation upBackgroundScrolling4 = new HorizontalMovingAnimation(textures["UpBackground"], 492*3, 4 * 492, 0, 5);
+        Animation.Animation upBackgroundScrolling4 = new HorizontalMovingAnimation(textures["UpBackground"], 492*3, 2 * 492, 0, upBackgroundScrollingTime);
         runningBackgroundAnimations.Add(upBackgroundScrolling4);
         upBackgroundScrolling4.StartAnimation();
+
+        Animation.Animation downBackgroundLights = new LoopingFadeInFadeOutAnimation(textures["DownBackgroundLights"], new Rectangle(0, 0, textures["DownBackgroundLights"].Width, textures["DownBackgroundLights"].Height), new Rectangle(0, 276 - 72 + 336, 1920, (276 - 72 + 336) - (1080 - 66)), lightCycleDuration, 110, 125);
+        runningBackgroundAnimations.Add(downBackgroundLights);
+        downBackgroundLights.StartAnimation();
+        
         areAnimationsInitialized = true;
+    }
+
+    private void DrawBackground(int y)
+    {
+        Raylib.DrawTexturePro(textures["DownBackground"], new Rectangle(0, 0, textures["DownBackground"].Width, textures["DownBackground"].Height), new Rectangle(0, y, 1920, y - (1080 - 66)), new Vector2(0, 0), 0, Color.White);
+    }
+
+    private void DrawFooter(int y)
+    {
+        Raylib.DrawTexture(textures["Footer"], 0, y, Color.White);
     }
     
     public override void Draw()
@@ -261,6 +275,8 @@ public class SongPlaying : Screen
             InitliazeAnimations();
         }
         Raylib.ClearBackground(Color.White);
+        DrawBackground(276 - 72 + 336);
+        DrawFooter(1080 - 66);
         DrawBackgroundAnimations();
         DrawPlayingZone(0, 276 - 72);
         DrawForegroundAnimations();

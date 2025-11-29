@@ -10,6 +10,8 @@ class Program
     {
         Raylib.InitWindow(1920, 1080, "Taiko!");
         Raylib.InitAudioDevice();
+        Raylib.ToggleBorderlessWindowed();
+        Raylib.SetWindowFocused();
         Screen songPlaying = new SongPlaying(Difficulty.ONI); 
         while (!Raylib.WindowShouldClose())
         {
