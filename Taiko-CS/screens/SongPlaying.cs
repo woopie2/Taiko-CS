@@ -43,6 +43,7 @@ public class SongPlaying : Screen
         LoadTexture("DownBackground", "5_Background/Normal/Down/0/0.png");
         LoadTexture("Footer", "8_Footer/0.png");
         LoadTexture("DownBackgroundLights", "5_Background/Normal/Down/0/1.png");
+        LoadTexture("Flower", "5_Background/Normal/Up/0/2nd_1P.png");
     }
 
     public override void LoadSounds()
@@ -231,6 +232,7 @@ public class SongPlaying : Screen
     {
         int upBackgroundScrollingTime = 10;
         double lightCycleDuration = 0.25;
+        double flowerYCycleDuration = 2;
         Animation.Animation upBackgroundScrolling0 = new HorizontalMovingAnimation(textures["UpBackground"], 492 * 4, 492 * 3, 0, upBackgroundScrollingTime);
         runningBackgroundAnimations.Add(upBackgroundScrolling0);
         upBackgroundScrolling0.StartAnimation();
@@ -251,6 +253,26 @@ public class SongPlaying : Screen
         runningBackgroundAnimations.Add(upBackgroundScrolling4);
         upBackgroundScrolling4.StartAnimation();
 
+        Animation.Animation upBackgroundFlower0 = new SineMovingAnimation(textures["Flower"], 492 * 3, 492 * 2, 0, -20, upBackgroundScrollingTime, flowerYCycleDuration);
+        runningBackgroundAnimations.Add(upBackgroundFlower0);
+        upBackgroundFlower0.StartAnimation();
+        
+        Animation.Animation upBackgroundFlower1 = new SineMovingAnimation(textures["Flower"], 492 * 2, 492 * 1, 0, -20, upBackgroundScrollingTime, flowerYCycleDuration);
+        runningBackgroundAnimations.Add(upBackgroundFlower1);
+        upBackgroundFlower1.StartAnimation();
+        
+        Animation.Animation upBackgroundFlower2 = new SineMovingAnimation(textures["Flower"], 492 * 1, 492 * 0, 0, -20, upBackgroundScrollingTime, flowerYCycleDuration);
+        runningBackgroundAnimations.Add(upBackgroundFlower2);
+        upBackgroundFlower2.StartAnimation();
+        
+        Animation.Animation upBackgroundFlower3 = new SineMovingAnimation(textures["Flower"], 492 * 0, 492 * -1, 0, -20, upBackgroundScrollingTime, flowerYCycleDuration);
+        runningBackgroundAnimations.Add(upBackgroundFlower3);
+        upBackgroundFlower3.StartAnimation();
+        
+        Animation.Animation upBackgroundFlower4 = new SineMovingAnimation(textures["Flower"], 492 * 4, 492 * 3, 0, -20, upBackgroundScrollingTime, flowerYCycleDuration);
+        runningBackgroundAnimations.Add(upBackgroundFlower4);
+        upBackgroundFlower4.StartAnimation();
+        
         Animation.Animation downBackgroundLights = new LoopingFadeInFadeOutAnimation(textures["DownBackgroundLights"], new Rectangle(0, 0, textures["DownBackgroundLights"].Width, textures["DownBackgroundLights"].Height), new Rectangle(0, 276 - 72 + 336, 1920, (276 - 72 + 336) - (1080 - 66)), lightCycleDuration, 110, 125);
         runningBackgroundAnimations.Add(downBackgroundLights);
         downBackgroundLights.StartAnimation();
