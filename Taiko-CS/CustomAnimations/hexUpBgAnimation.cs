@@ -62,7 +62,6 @@ public class hexUpBgAnimation : Animation.Animation
         yTimeInterval = yCycleDuration / ((Math.Max(minY, maxY) - Math.Min(minY, maxY)) * 2 - 1);
         currentY = minY;
         this.locationID = locationID;
-        Console.WriteLine($"locationID : {locationID} \n startX : {startX} endX : {endX}");
         switch (locationID)
         {
             case 1:
@@ -85,44 +84,44 @@ public class hexUpBgAnimation : Animation.Animation
         this.id = id;
     }
     
-    public hexUpBgAnimation(Texture2D hexBase, Texture2D hexFill, Texture2D hexChara, Rectangle charaSrc, int startX, int endX, int minY, int maxY, double yCycleDuration, double duration, int locationID, Phase startPhase, int currentY, int id) {
+    public hexUpBgAnimation(Texture2D hexBase, Texture2D hexFill, Texture2D hexChara, Rectangle charaSrc, int startX, int endX, int minY, int maxY, double yCycleDuration, double duration, int locationID, Phase startPhase, int startY, int id, int charaXOffsetStart, int hexFillXOffsetStart) {
         this.hexBase = hexBase;
         this.hexFill = hexFill;
         this.hexChara = hexChara;
         this.charaSrc = charaSrc;
         this.startX = startX;
         this.endX = endX;
-        currentX = startX;
+        this.currentX = startX;
         this.duration = duration;
-        movementTimeInterval = duration / (Math.Max(startX, endX) - Math.Min(startX, endX));
-        charaHexFillAnimationTimeInterval = 0.001;
+        this.movementTimeInterval = duration / (Math.Max(startX, endX) - Math.Min(startX, endX));
+        this.charaHexFillAnimationTimeInterval = 0.001;
         this.minY = minY;
         this.maxY = maxY;
         this.yCycleDuration = yCycleDuration;
-        yTimeInterval = yCycleDuration / ((Math.Max(minY, maxY) - Math.Min(minY, maxY)) * 2 - 1);
-        currentY = minY;
+        this.yTimeInterval = yCycleDuration / ((Math.Max(minY, maxY) - Math.Min(minY, maxY)) * 2 - 1);
+        this.currentY = startY;
         this.locationID = locationID;
+    
         switch (locationID)
         {
             case 1:
                 charaXLocation = 100;
                 charaYLocation = 75;
-                hexFillXOffset = 138;
                 break;
             case 2:
                 charaXLocation = 225;
                 charaYLocation = 90;
-                hexFillXOffset = -138;
                 break;
             case 4:
                 charaXLocation = 240;
                 charaYLocation = 128;
-                hexFillXOffset = -138;
                 break;
         }
-        currentPhase = startPhase;
-        this.currentY = currentY;
+    
+        this.currentPhase = startPhase;
         this.id = id;
+        this.charaXOffset = charaXOffsetStart;
+        this.hexFillXOffset = hexFillXOffsetStart;
     }
     
         public override void UpdateAnimation()
@@ -231,6 +230,10 @@ public class hexUpBgAnimation : Animation.Animation
 
     public override void Draw()
     {
+        if (currentX >= startX - 10 && currentX <= startX + 10)
+        {
+            Console.WriteLine($"[NEW] Drawing hex {id} at X={currentX} (startX={startX}), Y={currentY}, animating={isAnimating}");
+        }
         Raylib.DrawTexturePro(hexChara, charaSrc, new Rectangle(currentX + charaXOffset + charaXLocation, currentY + charaYLocation, charaSrc.Width, charaSrc.Height), Vector2.Zero, 0, Color.White);
         Raylib.DrawTexture(hexFill, currentX + hexFillXOffset, currentY, Color.White);
         Raylib.DrawTexture(hexBase, currentX, currentY, Color.White);
@@ -289,5 +292,20 @@ public class hexUpBgAnimation : Animation.Animation
     public Rectangle getCharaSrcRect()
     {
         return charaSrc;
+    }
+    
+    public int GetCharaXOffset()
+    {
+        return charaXOffset;
+    }
+
+    public int GetHexFillXOffset()
+    {
+        return hexFillXOffset;
+    }
+
+    public int GetCurrentX()
+    {
+        return currentX;
     }
 }

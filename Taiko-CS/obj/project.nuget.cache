@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "XYWg/CRoJ8c=",
+  "dgSpecHash": "Xo+sokSXiI8=",
   "success": true,
-  "projectFilePath": "/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/Taiko-CS.csproj",
+  "projectFilePath": "D:\\Projet c#\\Taiko-CS\\Taiko-CS\\Taiko-CS.csproj",
   "expectedPackageFiles": [
-    "/home/woopie2/.nuget/packages/raylib-cs/7.0.2/raylib-cs.7.0.2.nupkg.sha512"
+    "C:\\Users\\noahm\\.nuget\\packages\\raylib-cs\\7.0.2\\raylib-cs.7.0.2.nupkg.sha512"
   ],
   "logs": []
 }

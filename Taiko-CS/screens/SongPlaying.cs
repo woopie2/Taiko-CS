@@ -136,48 +136,47 @@ public class SongPlaying : Screen
             runningForegroundAnimations.Remove(animation);
         }
     }
-private void UpdateBackgroundAnimations()
-{
-    List<Animation.Animation> finishedAnimations = new();
-    List<Animation.Animation> restartedAnimations = new();
-
-    // Update animations and collect finished ones
-    foreach (var animation in runningBackgroundAnimations)
+    private void UpdateBackgroundAnimations()
     {
-        if (animation.IsFinish())
-            finishedAnimations.Add(animation);
-        else
-            animation.UpdateAnimation();
-    }
+        List<Animation.Animation> finishedAnimations = new();
+        List<Animation.Animation> restartedAnimations = new();
 
-    // Handle hex animations if all hexes are finished
-    var hexAnimations = runningBackgroundAnimations.OfType<hexUpBgAnimation>().ToList();
-    var finishedHexes = finishedAnimations.OfType<hexUpBgAnimation>().ToList();
-
-    if (hexAnimations.Count > 0 && finishedHexes.Count == hexAnimations.Count)
-    {
-        foreach (var oldAnim in hexAnimations.OrderBy(a => a.GetId()))
+        foreach (var animation in runningBackgroundAnimations)
         {
-            Texture2D hexBase = oldAnim.GetHexBaseTexture();
-            Texture2D hexFill = oldAnim.GetHexFillTexture();
-            Rectangle charaSrc = oldAnim.getCharaSrcRect();
-            int oldAnimStartX = oldAnim.GetStartX();
+            if (animation.IsFinish())
+                finishedAnimations.Add(animation);
+            else
+                animation.UpdateAnimation();
+        }
+        var finishedHexes = finishedAnimations.OfType<hexUpBgAnimation>().ToList();
+        foreach (var anim in finishedAnimations.Except(finishedHexes))
+        {
+            var restarted = anim.Clone();
+            restarted.StartAnimation();
+            restartedAnimations.Add(restarted);
+        }    
+        
+        foreach (var oldAnim in finishedHexes.OrderBy(a => a.GetId()))
+        {
             int oldAnimEndX = oldAnim.GetEndX();
             int locationID = oldAnim.GetLocationId();
-            int startPosFactor  = oldAnimEndX / 492;
+            int startPosFactor = oldAnimEndX / 492;
             int endPosFactor = oldAnimEndX / 492 - 1;
+                
             if (startPosFactor == -1 && endPosFactor == -2)
             {
                 startPosFactor = 4;
                 endPosFactor = 3;
             }
+                
             int startX = 492 * startPosFactor;
             int endX = 492 * endPosFactor;
+                
             var restarted = new hexUpBgAnimation(
-                hexBase,
-                hexFill,
+                oldAnim.GetHexBaseTexture(),
+                oldAnim.GetHexFillTexture(),
                 textures["HexChara"],
-                charaSrc,
+                oldAnim.getCharaSrcRect(),
                 startX,
                 endX,
                 0,
@@ -187,29 +186,21 @@ private void UpdateBackgroundAnimations()
                 locationID,
                 oldAnim.GetCurrentPhase(),
                 oldAnim.GetCurrentY(),
-                oldAnim.GetId()
+                oldAnim.GetId(),
+                oldAnim.GetCharaXOffset(),
+                oldAnim.GetHexFillXOffset()
             );
 
             restarted.StartAnimation();
             restartedAnimations.Add(restarted);
         }
+
+
+        runningBackgroundAnimations.AddRange(restartedAnimations);
+        
+        foreach (var anim in finishedAnimations)
+            runningBackgroundAnimations.Remove(anim);
     }
-
-    // Restart other animations normally
-    foreach (var anim in finishedAnimations.Except(finishedHexes))
-    {
-        var restarted = anim.Clone();
-        restarted.StartAnimation();
-        restartedAnimations.Add(restarted);
-    }
-
-    // CORRECTION: Remove finished animations FIRST
-    foreach (var anim in finishedAnimations)
-        runningBackgroundAnimations.Remove(anim);
-
-    // Then add restarted animations (ensures no gap)
-    runningBackgroundAnimations.AddRange(restartedAnimations);
-}
 
 
     private void DrawPlayingZone(int x, int y)
