@@ -9,4 +9,5 @@ public abstract class Screen
     public abstract void Draw();
     public abstract void HandleInput();
     public abstract void HandleAudio();
+    public abstract void HandleOthers();
 }

@@ -5,8 +5,8 @@ namespace Taiko_CS.Chart;
 public class ChartData
 {
     private Difficulty difficulty;
-    List<Measure> measures;
-    private Dictionary<string, string> fields;
+    public List<Measure> measures = new List<Measure>();
+    private Dictionary<string, string> fields = new Dictionary<string, string>();
 
     public void AddMeasure(Measure measure)
     {
@@ -16,5 +16,10 @@ public class ChartData
     public void SetField(string fieldName, string fieldValue)
     {
         fields[fieldName] = fieldValue;
+    }
+
+    public string GetField(string fieldName)
+    {
+        return fields[fieldName];
     }
 }

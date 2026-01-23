@@ -1,8 +1,8 @@
-﻿using System.ComponentModel;
-using System.Numerics;
+﻿using System.Numerics;
 using Raylib_cs;
 using Taiko_CS.Enums;
 using Taiko_CS.Animation;
+using Taiko_CS.Chart;
 using Taiko_CS.CustomAnimations;
 
 namespace Taiko_CS.screens;
@@ -23,13 +23,20 @@ public class SongPlaying : Screen
     private bool areAnimationsInitialized = false;
     private int gaugePercent = 0;
     bool hexAnimationsRestarted = true;
+    private ChartData chartData;
+    private Music song;
+    private List<Measure> measuresOnScreen = new List<Measure>();
+    private int nextMeasureIndex = 0;
 
-
-    public SongPlaying(Difficulty difficulty)
+    public SongPlaying(Difficulty difficulty, ChartData chartData)
     {
         this.difficulty = difficulty;
+        this.chartData = chartData;
         LoadTextures();
         LoadSounds();
+        Raylib.PlayMusicStream(song);
+        Raylib.SetMusicVolume(song, 0.5f);
+        Raylib.SeekMusicStream(song, 0);
     }
 
     public override void LoadTextures()
@@ -61,12 +68,14 @@ public class SongPlaying : Screen
         LoadTexture("Hex1Fill", "5_Background/Normal/Up/0/3rd_3_1_1P.png");
         LoadTexture("Hex4", "5_Background/Normal/Up/0/3rd_1_0_1P.png");
         LoadTexture("Hex4Fill", "5_Background/Normal/Up/0/3rd_1_1_1P.png");
+        LoadTexture("Notes", "Notes.png");
     }
 
     public override void LoadSounds()
     {
         LoadSound("Don", "Taiko/dong.wav");
         LoadSound("Ka", "Taiko/ka.wav");
+        song = Raylib.LoadMusicStream($"{chartData.GetField("LOCATION")}/{chartData.GetField("WAVE")}");
     }
 
     private void LoadTexture(string textureName, string texturePath)
@@ -98,6 +107,7 @@ public class SongPlaying : Screen
         {
             Raylib.UnloadSound(sound.Value);
         }
+        Raylib.UnloadMusicStream(song);
     }
 
     private void DrawForegroundAnimations()
@@ -205,10 +215,7 @@ public class SongPlaying : Screen
 
     private void DrawPlayingZone(int x, int y)
     {
-        Raylib.DrawTexture(textures["LeftSideBackground"], x, y + 72, Color.White);
         Raylib.DrawTexture(textures["PlayingZoneFrame"], x + textures["LeftSideBackground"].Width - 1, y, Color.White);
-        DrawTaiko(isLeftKaPressed, isRightKaPressed, isLeftDonPressed, isRightDonPressed, x + 499 - 180 - 10,
-            y + textures["Taiko"].Height / 2);
         Raylib.DrawTexturePro(textures["LaneUpBackground"],
             new Rectangle(0, 0, textures["LaneUpBackground"].Width, textures["LaneUpBackground"].Height),
             new Rectangle(x + textures["LeftSideBackground"].Width, y + 83, textures["PlayingZoneFrame"].Width,
@@ -218,10 +225,21 @@ public class SongPlaying : Screen
             new Rectangle(x + textures["LeftSideBackground"].Width, y + 83 + textures["LaneUpBackground"].Height + 6,
                 textures["PlayingZoneFrame"].Width, textures["LaneDownBackground"].Height), new Vector2(0, 0), 0,
             Color.White);
+        DrawHitZone(x + textures["LeftSideBackground"].Width + 10, y + 83 + 40);
+        DrawMeasures(276 - 72);
+        Raylib.DrawTexture(textures["LeftSideBackground"], x, y + 72, Color.White);
+        DrawTaiko(isLeftKaPressed, isRightKaPressed, isLeftDonPressed, isRightDonPressed, x + 499 - 180 - 10,
+            y + textures["Taiko"].Height / 2);
         DrawDifficultyIcon(x + 10, y);
         DrawGauge(x + textures["LeftSideBackground"].Width - 1 + 240, y + 12, gaugePercent);
     }
-
+    
+    private void DrawHitZone(int x, int y)
+    {
+        Rectangle src = new Rectangle(11, 12, 105, 105);
+        Raylib.DrawTexturePro(textures["Notes"], src, new Rectangle(x, y, src.Width, src.Height), Vector2.Zero, 0, Color.White);
+    }
+    
     private void DrawDifficultyIcon(int x, int y)
     {
         Texture2D difficultyIcon = new Texture2D();
@@ -508,13 +526,21 @@ public class SongPlaying : Screen
         Raylib.DrawTexture(textures["Footer"], 0, y, Color.White);
     }
 
+    private void DrawMeasures(int y)
+    {
+        foreach (Measure measure in measuresOnScreen)
+        {
+            measure.Draw(y + 83 + 40, textures["Notes"], Raylib.GetMusicTimePlayed(song));
+        }
+    }
+    
     public override void Draw()
     {
         if (!areAnimationsInitialized)
         {
             InitliazeAnimations();
         }
-
+        Raylib.UpdateMusicStream(song);
         Raylib.ClearBackground(Color.White);
         DrawBackground(276 - 72 + 336);
         DrawFooter(1080 - 66);
@@ -596,5 +622,77 @@ public class SongPlaying : Screen
                 playingSounds.RemoveAt(i);
             }
         }
+    }
+
+    public override void HandleOthers()
+    {
+        double songTime = Raylib.GetMusicTimePlayed(song);
+    
+        // Check ALL measures that need to be added
+        for (int i = nextMeasureIndex; i < chartData.measures.Count; i++)
+        {
+            Measure measure = chartData.measures[i];
+            if (measuresOnScreen.Contains(measure))
+                continue;
+        
+            double earliestSpawnTime = double.MaxValue;
+
+            foreach (Note note in measure.GetNotes())
+            {
+            
+                double noteHitTime = measure.songStartTime + note.timeInMeasure;
+                double distance = Math.Abs(Measure.SPAWN_X - Measure.HIT_X);
+                double travelTime = distance / (Measure.BASE_PIXELS_PER_SECOND * note.ScrollSpeed);
+                double noteSpawnTime = noteHitTime - travelTime;
+            
+                earliestSpawnTime = Math.Min(earliestSpawnTime, noteSpawnTime);
+            }
+
+            if (earliestSpawnTime == double.MaxValue)
+                earliestSpawnTime = measure.songStartTime - 3.0;
+            // Add measure if its spawn time has passed
+            if (songTime >= earliestSpawnTime)
+            {
+                if (i == 51) // The bugged measure
+                {
+                    Console.WriteLine($"=== MEASURE 51 NOTES ===");
+                    Console.WriteLine($"measure.songStartTime = {measure.songStartTime:F2}");
+    
+                    foreach (Note note in measure.GetNotes())
+                    {
+                        Console.WriteLine($"  Note: type={note.noteType}, rollType={note.rollType}, timeInMeasure={note.timeInMeasure:F2}, ScrollSpeed={note.ScrollSpeed}");
+        
+                        if (note.noteType != NoteType.None)
+                        {
+                            double noteHitTime = measure.songStartTime + note.timeInMeasure;
+                            double distance = Math.Abs(Measure.SPAWN_X - Measure.HIT_X);
+                            double travelTime = distance / (Measure.BASE_PIXELS_PER_SECOND * note.ScrollSpeed);
+                            double noteSpawnTime = noteHitTime - travelTime;
+                            Console.WriteLine($"       hitTime={noteHitTime:F2}, spawnTime={noteSpawnTime:F2}");
+                        }
+                    }
+                }
+                measuresOnScreen.Add(measure);
+            }
+        }
+    
+        // Update nextMeasureIndex to skip measures we've already checked
+        while (nextMeasureIndex < chartData.measures.Count && 
+               measuresOnScreen.Contains(chartData.measures[nextMeasureIndex]))
+        {
+            nextMeasureIndex++;
+        }
+
+        // Update and cleanup
+        List<Measure> finishedMeasures = new List<Measure>();
+        foreach (Measure measure in measuresOnScreen)
+        {
+            measure.Update(songTime, chartData.measures.IndexOf(measure));
+            if (measure.IsMeasureFinished((float) songTime))
+                finishedMeasures.Add(measure);
+        }
+
+        foreach (var measure in finishedMeasures)
+            measuresOnScreen.Remove(measure);
     }
 }

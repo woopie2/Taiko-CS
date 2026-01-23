@@ -232,7 +232,6 @@ public class hexUpBgAnimation : Animation.Animation
     {
         if (currentX >= startX - 10 && currentX <= startX + 10)
         {
-            Console.WriteLine($"[NEW] Drawing hex {id} at X={currentX} (startX={startX}), Y={currentY}, animating={isAnimating}");
         }
         Raylib.DrawTexturePro(hexChara, charaSrc, new Rectangle(currentX + charaXOffset + charaXLocation, currentY + charaYLocation, charaSrc.Width, charaSrc.Height), Vector2.Zero, 0, Color.White);
         Raylib.DrawTexture(hexFill, currentX + hexFillXOffset, currentY, Color.White);
