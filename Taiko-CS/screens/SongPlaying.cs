@@ -69,6 +69,7 @@ public class SongPlaying : Screen
         LoadTexture("Hex4", "5_Background/Normal/Up/0/3rd_1_0_1P.png");
         LoadTexture("Hex4Fill", "5_Background/Normal/Up/0/3rd_1_1_1P.png");
         LoadTexture("Notes", "Notes.png");
+        LoadTexture("MeasureBar", "Bar.png");
     }
 
     public override void LoadSounds()
@@ -530,7 +531,7 @@ public class SongPlaying : Screen
     {
         foreach (Measure measure in measuresOnScreen)
         {
-            measure.Draw(y + 83 + 40, textures["Notes"], Raylib.GetMusicTimePlayed(song));
+            measure.Draw(y + 83 + 40, textures["Notes"], Raylib.GetMusicTimePlayed(song), textures["MeasureBar"]);
         }
     }
     
@@ -642,7 +643,7 @@ public class SongPlaying : Screen
             
                 double noteHitTime = measure.songStartTime + note.timeInMeasure;
                 double distance = Math.Abs(Measure.SPAWN_X - Measure.HIT_X);
-                double travelTime = distance / (Measure.BASE_PIXELS_PER_SECOND * note.ScrollSpeed);
+                double travelTime = distance / (measure.basePixelsPerSecond * note.ScrollSpeed);
                 double noteSpawnTime = noteHitTime - travelTime;
             
                 earliestSpawnTime = Math.Min(earliestSpawnTime, noteSpawnTime);
@@ -666,7 +667,7 @@ public class SongPlaying : Screen
                         {
                             double noteHitTime = measure.songStartTime + note.timeInMeasure;
                             double distance = Math.Abs(Measure.SPAWN_X - Measure.HIT_X);
-                            double travelTime = distance / (Measure.BASE_PIXELS_PER_SECOND * note.ScrollSpeed);
+                            double travelTime = distance / (measure.basePixelsPerSecond * note.ScrollSpeed);
                             double noteSpawnTime = noteHitTime - travelTime;
                             Console.WriteLine($"       hitTime={noteHitTime:F2}, spawnTime={noteSpawnTime:F2}");
                         }

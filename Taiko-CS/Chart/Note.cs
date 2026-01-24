@@ -31,18 +31,18 @@ public class Note
     public double X { get; set; }
     public Note RollStart { get; set; }
     public Note RollEnd { get; set; }
-    public bool isBarlined;
     public Texture2D Notes { get; set; }
     public double RollStartTime;
     public double RollEndTime;
+    private bool showBarLine;
 
-    public Note(NoteType noteType, double timeInMeasure, double scrollSpeed, RollType rollType, bool isBarlined)
+    public Note(NoteType noteType, double timeInMeasure, double scrollSpeed, RollType rollType, bool showBarLine)
     {
         this.noteType = noteType;
         this.timeInMeasure = timeInMeasure;
         this.ScrollSpeed = scrollSpeed;
         this.rollType = rollType;
-        this.isBarlined = isBarlined;
+        this.showBarLine = showBarLine;
     }
     
     public Rectangle GetNoteTextureSrc()
@@ -101,8 +101,12 @@ public class Note
         return new Rectangle(0, 0, 0, 0);
     }
     
-    public void Draw(int y)
+    public void Draw(int y, Texture2D measureBar)
     {
+        if (showBarLine)
+        {
+            Raylib.DrawTexturePro(measureBar, new Rectangle(0, 0, 4, 270), new Rectangle((float)(X + GetNoteTextureSrc().Width / 2 * 1.3), y - 40, 4, 200 ), Vector2.Zero, 0, Color.White);
+        }
         Raylib.DrawTexturePro(Notes, this.GetNoteTextureSrc(), new Rectangle((int) X, y - (float) (GetNoteTextureSrc().Height * 1.3 / 2) + 50 , (float) (GetNoteTextureSrc().Width * 1.3), (float) (GetNoteTextureSrc().Height * 1.3)), Vector2.Zero, 0, Color.White);
     }
 }

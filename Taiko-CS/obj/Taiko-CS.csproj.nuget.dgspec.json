@@ -1,26 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/Taiko-CS.csproj": {}
+    "D:\\Projet c#\\Taiko-CS\\Taiko-CS\\Taiko-CS.csproj": {}
   },
   "projects": {
-    "/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/Taiko-CS.csproj": {
+    "D:\\Projet c#\\Taiko-CS\\Taiko-CS\\Taiko-CS.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/Taiko-CS.csproj",
+        "projectUniqueName": "D:\\Projet c#\\Taiko-CS\\Taiko-CS\\Taiko-CS.csproj",
         "projectName": "Taiko-CS",
-        "projectPath": "/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/Taiko-CS.csproj",
-        "packagesPath": "/home/woopie2/.nuget/packages/",
-        "outputPath": "/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/obj/",
+        "projectPath": "D:\\Projet c#\\Taiko-CS\\Taiko-CS\\Taiko-CS.csproj",
+        "packagesPath": "C:\\Users\\noahm\\.nuget\\packages\\",
+        "outputPath": "D:\\Projet c#\\Taiko-CS\\Taiko-CS\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/woopie2/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\noahm\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
         ],
         "sources": {
-          "https://api.nuget.org/v3/index.json": {}
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "D:\\Téléchargement": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://nuget.pkg.github.com/roblox-csharp/index.json": {}
         },
         "frameworks": {
           "net10.0": {
@@ -60,18 +64,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[10.0.0, 10.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.100/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.101/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",

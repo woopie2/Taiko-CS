@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Runtime.InteropServices.JavaScript;
 using System.Runtime.Versioning;
 using Taiko_CS.Enums;
 
@@ -44,6 +46,7 @@ public class Chart
     
     public static ChartData Parse(string tjaFilePath, string fileName, Difficulty difficulty)
     {
+        NumberFormatInfo decimalFormat = new NumberFormatInfo() { NumberDecimalSeparator = "." };
         string[] courseHeaderCommands = {"COURSE", "LEVEL", "BALLOON", "SCOREINIT", "SCOREDIFF"};
         string numbers = "0123456789";
         string fileData = "";
@@ -144,8 +147,8 @@ public class Chart
                 }
 
                 Measure m = new Measure((60000 * currentTimeSignature * 4 / currentBPM) / 1000,
-                    measureStartTime, currentTimeSignature);
-                Note n = new Note(NoteType.None, 0, currentScrollSpeed, currentRollType, false);
+                    measureStartTime, currentTimeSignature, currentBPM);
+                Note n = new Note(NoteType.None, 0, currentScrollSpeed, currentRollType, showMeasureBar);
                 n.RollStart = currentRollStart;
                 m.AddNote(n);
                 chartData.AddMeasure(m);
@@ -181,7 +184,7 @@ public class Chart
                         break;
                     }
                     if (currentMeasure == null)
-                        currentMeasure = new Measure((60000 * currentTimeSignature * 4 / currentBPM) / 1000, 0, currentTimeSignature);
+                        currentMeasure = new Measure((60000 * currentTimeSignature * 4 / currentBPM) / 1000, 0, currentTimeSignature, currentBPM);
 
                     measureContent += c;
                 }
@@ -195,12 +198,12 @@ public class Chart
                 chartData.SetField(fieldName, fieldValue);
                 if (fieldName == "BPM")
                 {
-                    currentBPM = double.Parse(fieldValue);
+                    currentBPM = double.Parse(fieldValue, decimalFormat);
                 }
 
                 if (fieldName == "OFFSET")
                 {
-                    offset = double.Parse(fieldValue);
+                    offset = double.Parse(fieldValue, decimalFormat);
                 }
                 fieldName = "";
                 fieldValue = "";
@@ -229,13 +232,13 @@ public class Chart
                         var measureParts = eventParts[1].Split('/');
                         currentTimeSignature = double.Parse(measureParts[0]) / double.Parse(measureParts[1]);
                         double secondsPerMeasure = (60000 * currentTimeSignature * 4 / currentBPM) / 1000;
-                        currentMeasure = new Measure(secondsPerMeasure, 0, currentTimeSignature);
+                        currentMeasure = new Measure(secondsPerMeasure, 0, currentTimeSignature, currentBPM);
                         break;
                     case "SCROLL":
-                        currentScrollSpeed = double.Parse(eventParts[1]);
+                        currentScrollSpeed = double.Parse(eventParts[1], decimalFormat);
                         break;
                     case "BPMCHANGE":
-                        currentBPM = double.Parse(eventParts[1]);
+                        currentBPM = double.Parse(eventParts[1], decimalFormat);
                         break;
                     case "BARLINEOFF":
                         showMeasureBar = false;
@@ -262,7 +265,7 @@ public class Chart
                         : lastMillisecondInMeasure + (secondsPerMeasure / measureContent.Length);
 
                     lastMillisecondInMeasure = timeInMeasure;
-                    bool isNoteBarlined = (i == measureContent.Length - 1 && showMeasureBar);
+                    bool isNoteBarlined = (currentMeasure.GetNumberOfNotes() == 0 && showMeasureBar);
                     Note note = new Note(noteType, 0, currentScrollSpeed, currentRollType, isNoteBarlined);
                     secondsPerMeasures.Add(secondsPerMeasure);
                     note.RollStart = currentRollStart;
@@ -344,9 +347,8 @@ public class Chart
                     {
                         secondsPerMeasure = secondsPerMeasures[index]; 
                         Console.WriteLine(secondsPerMeasure);
-                        double milInMeasure = lastMilInMeasure + (secondsPerMeasure / currentMeasure.GetNotes().Count);
-                        note.timeInMeasure = milInMeasure;
-                        lastMilInMeasure = milInMeasure;
+                        note.timeInMeasure = lastMilInMeasure;
+                        lastMilInMeasure += secondsPerMeasure / currentMeasure.GetNotes().Count;
                         index++;
 
                     }
@@ -371,11 +373,12 @@ public class Chart
                     }
 
                     currentMeasure.songStartTime = measureStartTime;
+                    currentMeasure.timeLength = lastMilInMeasure;
                     Console.WriteLine($"mesureSartTime : {measureStartTime} - measureLength {currentMeasure.timeLength}");
                     chartData.AddMeasure(currentMeasure);
 
                     // Création de la nouvelle mesure
-                    currentMeasure = new Measure(lastMilInMeasure, 0, currentTimeSignature);
+                    currentMeasure = new Measure(0, 0, currentTimeSignature, currentBPM);
                     lastMillisecondInMeasure = 0;
                 }
             }
