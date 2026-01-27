@@ -137,15 +137,23 @@ public class Chart
             if (line[0] == ',' && measureContent == "" && canParseMeasure)
             {
                 double measureStartTime = 0;
-                var prev = chartData.measures[chartData.measures.Count - 1];
-                if (prev.timeLength <= 0)
+                if (chartData.measures.Count == 0)
                 {
-                    measureStartTime = prev.songStartTime;
+                    measureStartTime = -offset;
                 }
                 else
                 {
-                    measureStartTime = prev.songStartTime + prev.timeLength;
+                    var prev = chartData.measures[chartData.measures.Count - 1];
+                    if (prev.timeLength <= 0)
+                    {
+                        measureStartTime = prev.songStartTime;
+                    }
+                    else
+                    {
+                        measureStartTime = prev.songStartTime + prev.timeLength;
+                    }
                 }
+                
 
                 Measure m = new Measure((60000 * currentTimeSignature * 4 / currentBPM) / 1000,
                     measureStartTime, currentTimeSignature, currentBPM);

@@ -5000,3 +5000,11 @@ D:/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Dragoon/Dragoon.tja
 /home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Garakuta Doll Play/Garakuta Doll Play.tja
 /home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Asagao/Asagao.ogg
 /home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Asagao/Asagao.tja
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Re end of a Dream/Re End of a Dream.ogg
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Re end of a Dream/Re End of a Dream.tja
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/FLOWER/FLOWER.ogg
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/FLOWER/FLOWER.tja
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Calamity Fortune/Calamity Fortune.ogg
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Calamity Fortune/Calamity Fortune.tja
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Dogbite/Dogbite.ogg
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Dogbite/Dogbite.tja

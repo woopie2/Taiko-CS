@@ -21,7 +21,7 @@ public class FadeOutAnimation : Animation
     {
         this.texture = texture;
         this.duration = duration;
-        timeInterval =  duration / 255;
+        timeInterval = duration / 255;
         this.x = x;
         this.y = y;
         isAnimating = true;
@@ -83,9 +83,23 @@ public class FadeOutAnimation : Animation
             return;
         }
 
-        if (!(Raylib.GetTime() - time >= timeInterval)) return;
-        alpha--;
-        time = Raylib.GetTime();
+        bool isUpdating = false;
+        double currentTime = Raylib.GetTime();
+        while (currentTime - time >= timeInterval)
+        {
+            isUpdating = true;
+            alpha--;
+            if (alpha == 0)
+            {
+                break;
+            }
+            time += timeInterval;
+        }
+
+        if (isUpdating)
+        {
+            time = Raylib.GetTime();   
+        }
     }
 
     public override void Draw()

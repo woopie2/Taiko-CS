@@ -177,22 +177,25 @@ public class Measure
             if (songStartTime + note.timeInMeasure < songTime && note.rollType == RollType.NONE && note.noteType is not (NoteType.Drumroll or NoteType.BigDrumroll or NoteType.Balloon))
             {
                 note.X = 0;
-                activeNotes.Remove(note);
-                removedNotes.Add(note);
                 removedNotesResult.Add(note);
             }
 
             if (note.noteType is NoteType.Balloon && note.RollEnd.X <= HIT_X && note.RollEnd.X > 0)
             {
                 note.X = 0;
-                activeNotes.Remove(note);
-                removedNotes.Add(note);
                 removedNotesResult.Add(note);
             }
         }
     }
 
-
+    public void UpdateRemovedNote(List<Note> notesToRemove)
+    {
+        foreach (Note note in notesToRemove)
+        {
+            activeNotes.Remove(note);
+            removedNotes.Add(note);
+        }
+    }
 
 
 

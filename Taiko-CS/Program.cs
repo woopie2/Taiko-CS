@@ -9,11 +9,10 @@ class Program
 {
     static void Main(string[] args)
     {
-        Raylib.SetConfigFlags(ConfigFlags.VSyncHint);
-        ChartData dragoonExtreme = Chart.Chart.Parse("./Songs/Dragoon", "Dragoon.tja", Difficulty.ONI);
+        Raylib.SetConfigFlags(ConfigFlags.VSyncHint | ConfigFlags.BorderlessWindowMode | ConfigFlags.FullscreenMode);
+        ChartData dragoonExtreme = Chart.Chart.Parse("./Songs/VIVIVIVID", "VIVIVIVID.tja", Difficulty.ONI);
         Raylib.InitWindow(1920, 1080, "Taiko!");
         Raylib.InitAudioDevice();
-        Raylib.ToggleBorderlessWindowed();
         Raylib.SetWindowFocused();
         Screen songPlaying = new SongPlaying(Difficulty.ONI, dragoonExtreme); 
         while (!Raylib.WindowShouldClose())

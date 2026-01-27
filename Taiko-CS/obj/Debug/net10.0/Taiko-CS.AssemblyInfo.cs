@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Taiko-CS")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+496531187382630e58cb85aba257258b5101902a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+584ad152ca91f681cfe3339435c82b57ce9a196f")]
 [assembly: System.Reflection.AssemblyProductAttribute("Taiko-CS")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Taiko-CS")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
