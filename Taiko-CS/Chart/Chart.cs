@@ -46,6 +46,7 @@ public class Chart
     
     public static ChartData Parse(string tjaFilePath, string fileName, Difficulty difficulty)
     {
+        double audioOffset = 0;
         NumberFormatInfo decimalFormat = new NumberFormatInfo() { NumberDecimalSeparator = "." };
         string[] courseHeaderCommands = {"COURSE", "LEVEL", "BALLOON", "SCOREINIT", "SCOREDIFF"};
         string numbers = "0123456789";
@@ -148,7 +149,7 @@ public class Chart
 
                 Measure m = new Measure((60000 * currentTimeSignature * 4 / currentBPM) / 1000,
                     measureStartTime, currentTimeSignature, currentBPM);
-                Note n = new Note(NoteType.None, 0, currentScrollSpeed, currentRollType, showMeasureBar);
+                Note n = new Note(NoteType.None, 0, currentScrollSpeed, currentRollType, showMeasureBar, currentBPM);
                 n.RollStart = currentRollStart;
                 m.AddNote(n);
                 chartData.AddMeasure(m);
@@ -203,7 +204,7 @@ public class Chart
 
                 if (fieldName == "OFFSET")
                 {
-                    offset = double.Parse(fieldValue, decimalFormat);
+                    offset = double.Parse(fieldValue, decimalFormat) - audioOffset;
                 }
                 fieldName = "";
                 fieldValue = "";
@@ -266,7 +267,7 @@ public class Chart
 
                     lastMillisecondInMeasure = timeInMeasure;
                     bool isNoteBarlined = (currentMeasure.GetNumberOfNotes() == 0 && showMeasureBar);
-                    Note note = new Note(noteType, 0, currentScrollSpeed, currentRollType, isNoteBarlined);
+                    Note note = new Note(noteType, 0, currentScrollSpeed, currentRollType, isNoteBarlined, currentBPM);
                     secondsPerMeasures.Add(secondsPerMeasure);
                     note.RollStart = currentRollStart;
                     currentMeasure.AddNote(note);

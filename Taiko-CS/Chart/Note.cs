@@ -27,6 +27,7 @@ public class Note
     public NoteType noteType;
     public double timeInMeasure;
     public double ScrollSpeed;
+    public double BPM;
     public RollType rollType;
     public double X { get; set; }
     public Note RollStart { get; set; }
@@ -36,13 +37,14 @@ public class Note
     public double RollEndTime;
     private bool showBarLine;
 
-    public Note(NoteType noteType, double timeInMeasure, double scrollSpeed, RollType rollType, bool showBarLine)
+    public Note(NoteType noteType, double timeInMeasure, double scrollSpeed, RollType rollType, bool showBarLine, double BPM)
     {
         this.noteType = noteType;
         this.timeInMeasure = timeInMeasure;
         this.ScrollSpeed = scrollSpeed;
         this.rollType = rollType;
         this.showBarLine = showBarLine;
+        this.BPM = BPM;
     }
     
     public Rectangle GetNoteTextureSrc()

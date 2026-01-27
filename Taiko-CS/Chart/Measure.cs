@@ -10,22 +10,21 @@ namespace Taiko_CS.Chart;
 public class Measure
 {
     private List<Note> notes = new List<Note>();
-    private List<Note> activeNotes = new List<Note>();
-    private List<Note> removedNotes = new List<Note>();
+    public List<Note> activeNotes = new List<Note>();
+    public List<Note> removedNotes = new List<Note>();
     public double timeLength;
     public double songStartTime;
 
     public const double SPAWN_X = 1920;           // Notes apparaissent hors écran à droite
     public const double HIT_X = 509;              // Point de frappe
     public double timeSignature;
-    public double basePixelsPerSecond = 600  * 1.3;
+    public double pixelPerBeat = 300;
 
     public Measure(double timeLength, double songStartTime, double timeSignature, double BPM)
     {
         this.timeLength = timeLength;
         this.songStartTime = songStartTime;
         this.timeSignature = timeSignature;
-        this.basePixelsPerSecond = ((SPAWN_X - HIT_X) / (240 / BPM));
     }
 
     public void AddNote(Note note)
@@ -58,24 +57,14 @@ public class Measure
 
     private double GetMeasureEndX(float songTime, double scrollSpeed)
     {
-        double hitTime = songStartTime + timeLength;
-        double distance = Math.Abs(SPAWN_X - HIT_X);
-        double travelTime = distance / (basePixelsPerSecond * scrollSpeed);
-        double spawnTime = hitTime - travelTime;
-        double timeSinceSpawn = songTime - spawnTime;
-        double pixelsTraveled = (basePixelsPerSecond * scrollSpeed) * Math.Max(0, timeSinceSpawn);
-        return SPAWN_X - pixelsTraveled;
+        double measurePos = pixelPerBeat * (notes[0].BPM / 60) * ((songStartTime + timeLength) - songTime) * notes[0].ScrollSpeed;
+        return measurePos;
     }
 
-    private double GetMeasureStartX(float songTime)
+    public double GetMeasureStartX(float songTime)
     {
-        double hitTime = songStartTime;
-        double distance = Math.Abs(SPAWN_X - HIT_X);
-        double travelTime = distance / (basePixelsPerSecond * notes[0].ScrollSpeed);
-        double spawnTime = hitTime - travelTime;
-        double timeSinceSpawn = songTime - spawnTime;
-        double pixelsTraveled = (basePixelsPerSecond * notes[^1].ScrollSpeed) * Math.Max(0, timeSinceSpawn);
-        return SPAWN_X - pixelsTraveled;
+        double measurePos = pixelPerBeat * (notes[0].BPM / 60) * ((songStartTime) - songTime) * notes[0].ScrollSpeed;
+        return measurePos;
     }
     
     public void Draw(int y, Texture2D notesTexture, float songTime, Texture2D barLine)
@@ -146,15 +135,15 @@ public class Measure
             }
 
             if (note.noteType is NoteType.Drumroll or NoteType.BigDrumroll)
-                {
-                    drawLater.Add(note);
-                    continue;
-                }
+            {
+                drawLater.Add(note);
+                continue;
+            }
 
-                if (note.noteType != NoteType.None)
-                {
-                    note.Draw(y, barLine);
-                }
+            if (note.noteType != NoteType.None)
+            {
+                note.Draw(y, barLine);
+            }
                 
         }
 
@@ -164,52 +153,41 @@ public class Measure
         }
     }
 
-    public void Update(double songTime, int measureIndex)
+    public void Update(double songTime, int measureIndex, ref List<Note> removedNotesResult)
     {
         for (int i = 0; i < notes.Count; i++)
         {
             Note note = notes[i];
-
-            double hitTime = songStartTime + note.timeInMeasure;
-            double distance = Math.Abs(SPAWN_X - HIT_X);
-            double travelTime = distance / (basePixelsPerSecond * note.ScrollSpeed);
-            double spawnTime = hitTime - travelTime;
-            double timeSinceSpawn = songTime - spawnTime;
-            if (!activeNotes.Contains(note) && !removedNotes.Contains(note) && timeSinceSpawn >= 0)
+            double notePos = pixelPerBeat * (note.BPM / 60) * ((songStartTime + note.timeInMeasure) - songTime) * note.ScrollSpeed; 
+            if (!activeNotes.Contains(note) && !removedNotes.Contains(note) && notePos <= SPAWN_X && notePos > 0)
             {
                 activeNotes.Add(note);
             }
 
             if (!activeNotes.Contains(note))
                 continue;
-                // ALL notes start at SPAWN_X and move toward HIT_X
-                // Calculate how far the note should have traveled
-                double pixelsTraveled = (basePixelsPerSecond * note.ScrollSpeed) * Math.Max(0, timeSinceSpawn);
-            
-                // Position = start position + distance traveled
-                // (For right-to-left movement: SPAWN_X - pixelsTraveled)
-                note.X = SPAWN_X - pixelsTraveled;
-                if (note.noteType is NoteType.Balloon && note.X <= HIT_X)
-                {
-                    note.X = HIT_X;
-                }
+
+            note.X = notePos + HIT_X;
+            if (note.noteType is NoteType.Balloon && note.X <= HIT_X)
+            {
+                note.X = HIT_X;
+            }
 
             // Remove note when past hit time
-            if (songTime >= hitTime && note.rollType == RollType.NONE && note.noteType is not (NoteType.Drumroll or NoteType.BigDrumroll or NoteType.Balloon))
+            if (songStartTime + note.timeInMeasure < songTime && note.rollType == RollType.NONE && note.noteType is not (NoteType.Drumroll or NoteType.BigDrumroll or NoteType.Balloon))
             {
                 note.X = 0;
                 activeNotes.Remove(note);
                 removedNotes.Add(note);
+                removedNotesResult.Add(note);
             }
 
-            if (note.noteType is NoteType.Balloon && activeNotes.Contains(note.RollEnd) && note.RollEnd.X < HIT_X)
+            if (note.noteType is NoteType.Balloon && note.RollEnd.X <= HIT_X && note.RollEnd.X > 0)
             {
                 note.X = 0;
                 activeNotes.Remove(note);
                 removedNotes.Add(note);
-            }
-            {
-                
+                removedNotesResult.Add(note);
             }
         }
     }
@@ -223,6 +201,6 @@ public class Measure
 
     public bool IsMeasureFinished(float songTime)
     {
-        return songTime >= songStartTime + timeLength && GetMeasureEndX(songTime, notes[^1].ScrollSpeed) < 0;
+        return songTime >= songStartTime + timeLength && notes[^1].X <= 0;
     }
 }
