@@ -6,7 +6,7 @@ namespace Taiko_CS.Animation;
 public class CircleAnimation : Animation
 {
     private Texture2D texture;
-    private Rectangle src;
+    public Rectangle src;
     private bool isAnimating = false;
     private double currentDegree = 0;
     private double maxDegree; 

@@ -10,11 +10,12 @@ class Program
     static void Main(string[] args)
     {
         Raylib.SetConfigFlags(ConfigFlags.VSyncHint | ConfigFlags.BorderlessWindowMode | ConfigFlags.FullscreenMode);
-        ChartData dragoonExtreme = Chart.Chart.Parse("./Songs/VIVIVIVID", "VIVIVIVID.tja", Difficulty.ONI);
+        ChartData dragoonExtreme = Chart.Chart.Parse("./Songs/Dragon of Ice", "Dragon of Ice Kooryu.tja", Difficulty.ONI);
         Raylib.InitWindow(1920, 1080, "Taiko!");
         Raylib.InitAudioDevice();
         Raylib.SetWindowFocused();
-        Screen songPlaying = new SongPlaying(Difficulty.ONI, dragoonExtreme); 
+        Screen songPlaying = new SongPlaying(Difficulty.ONI, dragoonExtreme);
+        Raylib.SetExitKey(KeyboardKey.Null);
         while (!Raylib.WindowShouldClose())
         {
             Raylib.BeginDrawing();

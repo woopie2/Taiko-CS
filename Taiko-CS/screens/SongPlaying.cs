@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections;
+using System.Numerics;
 using Raylib_cs;
 using Taiko_CS.Enums;
 using Taiko_CS.Animation;
@@ -20,6 +21,7 @@ public class SongPlaying : Screen
     private List<Animation.Animation> runningForegroundAnimations = new List<Animation.Animation>();
     private List<Animation.Animation> runningBackgroundAnimations = new List<Animation.Animation>();
     private List<Animation.Animation> runningLaneAnimation = new List<Animation.Animation>();
+    private List<Animation.Animation> runningOnTopAnimation = new List<Animation.Animation>();
     private Dictionary<int, int> hexAnimationSprites = new Dictionary<int, int>();
     private bool areAnimationsInitialized = false;
     private int gaugePercent = 0;
@@ -35,7 +37,8 @@ public class SongPlaying : Screen
     private double lastKaHitSoundTime = double.MinValue;
     private double lastHitTime = -1;
     private RollType currentRollType;
-    private double lastRollHitTime = -1;
+    private Note? currentRollStartNote = null;
+    private double lastRollHitTime = 1;
     private double greatTimeInterval;
     private double okTimeInterval;
     private double badTimeInterval;
@@ -93,7 +96,7 @@ public class SongPlaying : Screen
         LoadTexture("Hex1Fill", "5_Background/Normal/Up/0/3rd_3_1_1P.png");
         LoadTexture("Hex4", "5_Background/Normal/Up/0/3rd_1_0_1P.png");
         LoadTexture("Hex4Fill", "5_Background/Normal/Up/0/3rd_1_1_1P.png");
-        LoadTexture("Notes", "Notes.png");
+        LoadTexture("Notes", "Notes.png", TextureFilter.Bilinear);
         LoadTexture("MeasureBar", "Bar.png");
         LoadTexture("Explosion", "10_Effects/Hit/Explosion.png");
         LoadTexture("LaneDon", "12_Lane/Yellow.png");
@@ -116,6 +119,15 @@ public class SongPlaying : Screen
         string gameTextureFolder = "./ressources/Graphics/5_Game";
         Image image = Raylib.LoadImage($"{gameTextureFolder}/{texturePath}");
         Texture2D texture = Raylib.LoadTextureFromImage(image);
+        textures.Add(textureName, texture);
+    }
+    
+    private void LoadTexture(string textureName, string texturePath, TextureFilter textureFilter)
+    {
+        string gameTextureFolder = "./ressources/Graphics/5_Game";
+        Image image = Raylib.LoadImage($"{gameTextureFolder}/{texturePath}");
+        Texture2D texture = Raylib.LoadTextureFromImage(image);
+        Raylib.SetTextureFilter(texture,  textureFilter);
         textures.Add(textureName, texture);
     }
 
@@ -163,7 +175,17 @@ public class SongPlaying : Screen
 
     private void DrawForegroundAnimations()
     {
-        foreach (Animation.Animation animation in runningForegroundAnimations)
+        List<Animation.Animation> reversedList = new List<Animation.Animation>(runningForegroundAnimations);
+        reversedList.Reverse();
+        foreach (Animation.Animation animation in reversedList)
+        {
+            animation.Draw();
+        }
+    }
+
+    private void DrawOnTopAnimations()
+    {
+        foreach (Animation.Animation animation in runningOnTopAnimation)
         {
             animation.Draw();
         }
@@ -202,25 +224,79 @@ public class SongPlaying : Screen
 
         foreach (Animation.Animation animation in finishedAnimations)
         {
-            if (animation is CircleAnimation)
+            if (animation is CircleAnimation circleAnimation)
             {
-                int lastX = 0;
+                int lastX = 540;
                 List<Rectangle> framesSrc = new List<Rectangle>();
-                for (int i = 0; i < 19; i++)
+                for (int i = 0; i < 17; i++)
                 {
                     framesSrc.Add(new Rectangle(lastX, 0, 270, 270));
                     lastX += 270;
                 }
 
                 StopMotionSingleImageAnimation anim = new StopMotionSingleImageAnimation(textures["NoteEndExplosion"],
-                    framesSrc, 1700, 100, 0.15, 270, 270);
+                    framesSrc, 1700, 100, 0.22, 270, 270, EasingType.EaseInCubic);
                 runningForegroundAnimations.Add(anim);
                 anim.StartAnimation();
+                if (IsNoteRemovedAnimationFinished())
+                {
+                    Rectangle src = circleAnimation.src;
+                    if (new Note(NoteType.BigDon, 0, 0, 0, false, 0).GetNoteTextureSrc().Equals(src))
+                    {
+                        src = new Note(NoteType.Don, 0, 0, 0, false, 0).GetNoteTextureSrc();
+                    } else if (new Note(NoteType.BigKa, 0, 0, 0, false, 0).GetNoteTextureSrc().Equals(src))
+                    {
+                        src = new Note(NoteType.Ka, 0, 0, 0, false, 0).GetNoteTextureSrc();
+                    }
+
+                    NoteRemoveAnimation removeAnimation =
+                        new NoteRemoveAnimation(textures["Notes"], src, 0.22, 1.5, 1785, 185);
+                    runningOnTopAnimation.Add(removeAnimation);
+                    removeAnimation.StartAnimation();   
+                }
             }
             runningForegroundAnimations.Remove(animation);
         }
     }
 
+    private void UpdateOnTopAnimations()
+    {
+        List<Animation.Animation> finishedAnimations = new List<Animation.Animation>();
+        foreach (Animation.Animation animation in runningOnTopAnimation)
+        {
+            if (animation.IsFinish())
+            {
+                finishedAnimations.Add(animation);
+                continue;
+            }
+
+            animation.UpdateAnimation();
+        }
+
+        foreach (Animation.Animation animation in finishedAnimations)
+        {
+            runningOnTopAnimation.Remove(animation);
+        }
+    }
+    
+    private bool IsNoteRemovedAnimationFinished()
+    {
+        foreach (Animation.Animation animation in runningOnTopAnimation)
+        {
+            if (animation is NoteRemoveAnimation noteRemoveAnimation && noteRemoveAnimation.IsFinish())
+            {
+                return true;
+            }
+            if (animation is NoteRemoveAnimation noteRemoveAnimation2 &&
+                       !noteRemoveAnimation2.IsFinish())
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    
     private void UpdateLaneAnimations()
     {
         List<Animation.Animation> finishedAnimations = new List<Animation.Animation>();
@@ -624,100 +700,214 @@ public class SongPlaying : Screen
     private void DrawMeasures(int y)
     {
         List<Measure> measuresToDraw = new List<Measure>(measuresOnScreen);
-        measuresToDraw.Sort((m, m2) => m.GetNotes()[0].ScrollSpeed.CompareTo(m2.GetNotes()[0].ScrollSpeed));
+        measuresToDraw.Sort((m, m2) => m.GetNotes().Max(n => n.ScrollSpeed).CompareTo(m2.GetNotes().Max(n => n.ScrollSpeed)));
         foreach (Measure measure in measuresToDraw)
         {
             measure.Draw(y + 83 + 40, textures["Notes"], Raylib.GetMusicTimePlayed(song), textures["MeasureBar"]);
         }
     }
 
-    private Measure? GetNearestMeasure()
+    private Measure? GetNearestMeasure(bool isAfterHitPoint)
     {
         if (measuresOnScreen.Count == 0)
         {
             return null;
         }
-    
-        float currentTime = Raylib.GetMusicTimePlayed(song);
-        float hitZoneX = (float) -Measure.HIT_X; // Replace with your actual hit detection X position
-    
-        Measure nearest = measuresOnScreen[0];
-        double minDistance = Math.Abs(nearest.GetMeasureStartX(currentTime) - hitZoneX);
-    
+        
+        Measure? nearest = measuresOnScreen[0];
+
         foreach (Measure m in measuresOnScreen)
         {
-            double measureX = m.GetMeasureStartX(currentTime);
-            double distance = Math.Abs(measureX - hitZoneX);
-        
-            if (distance < minDistance)
+            if (m.activeNotes.Count > 0 && nearest.activeNotes.Count > 0 && m.activeNotes[0].X > 0)
             {
-                minDistance = distance;
-                nearest = m;
+                if (isAfterHitPoint)
+                {
+                    // Prefer measures at or past HIT_X (X <= HIT_X)
+                    if (m.activeNotes[0].X <= Measure.HIT_X)
+                    {
+                        if (m.activeNotes[0].X > nearest.activeNotes[0].X)
+                        {
+                            nearest = m;
+                        }
+                    }
+                }
+                else
+                {
+                    // Prefer measures before HIT_X (X > HIT_X)
+                    if (m.activeNotes[0].X > Measure.HIT_X)
+                    {
+                        if (m.activeNotes[0].X < nearest.activeNotes[0].X)
+                        {
+                            nearest = m;
+                        }
+                    }
+                }
             }
+           
         }
-
         return nearest;
     }
-
-    private Note? GetNearestNoteFromHitPoint(Measure measure, bool includeNone)
+    
+    private Note? GetNearestNoteFromHitPoint(Measure measure, bool includeNone, bool isAfterHitPoint)
     {
-        if (measure.activeNotes.Count == 0)
+        if (measure == null)
         {
             return null;
         }
     
+        if (measure.activeNotes.Count == 0 && measure.removedNotes.Count == 0)
+        {
+            return null;
+        }
+
+        if (measure.activeNotes.Count == 0)
+        {
+            return measure.removedNotes[^1];
+        } 
+
+        // Console.WriteLine($"Checking {measure.activeNotes.Count} notes, looking for isAfterHitPoint={isAfterHitPoint}");
+    
         Note? nearest = null;
-        double minDistance = double.MaxValue;
     
         foreach (Note note in measure.activeNotes)
         {
+            // Console.WriteLine($"  Note: X={note.X}, Type={note.noteType}, HIT_X={Measure.HIT_X}");
+        
             if (!includeNone && note.noteType is NoteType.None)
             {
+                // Console.WriteLine("    Skipped (None type)");
                 continue;
             }
 
-            // if (note.noteType == NoteType.Balloon)
-            // {
-            //     continue;
-            // }
-        
-            double distance = note.X - Measure.HIT_X;
-            if (distance >= 0 && distance < minDistance)
+            if (isAfterHitPoint)
             {
-                nearest = note;
-                minDistance = distance;
+                if (note.X <= Measure.HIT_X)
+                {
+                    // Console.WriteLine($"    Note passed hit point, current nearest: {nearest?.X}");
+                    if (nearest == null || note.X > nearest.X)
+                    {
+                        nearest = note;
+                        // Console.WriteLine($"    New nearest: {nearest.X}");
+                    }
+                }
+                else
+                {
+                    // Console.WriteLine("    Note hasn't passed hit point yet");
+                }
+            }
+            else
+            {
+                if (note.X > Measure.HIT_X)
+                {
+                    if (nearest == null || note.X < nearest.X)
+                    {
+                        nearest = note;
+                    }
+                }
+            }
+        }
+
+        // Console.WriteLine($"Returning nearest: {nearest?.X}");
+        return nearest;
+    }
+    
+    private Note? GetNearestNoteAcrossAllMeasures(bool includeNone, bool isAfterHitPoint)
+    {
+        Note? nearest = null;
+
+        foreach (Measure m in measuresOnScreen)
+        {
+            foreach (Note note in m.activeNotes)
+            {
+                if (!includeNone && note.noteType is NoteType.None)
+                    continue;
+
+                if (note.X <= 0)
+                    continue;
+
+                if (isAfterHitPoint)
+                {
+                    if (note.X <= Measure.HIT_X)
+                    {
+                        if (nearest == null || note.X > nearest.X)
+                            nearest = note;
+                    }
+                }
+                else
+                {
+                    if (note.X > Measure.HIT_X)
+                    {
+                        if (nearest == null || note.X < nearest.X)
+                            nearest = note;
+                    }
+                }
             }
         }
 
         return nearest;
     }
-    
     private void UpdateCurrentRollType()
+{
+    // Console.WriteLine("=== UpdateCurrentRollType START ===");
+    
+    if (currentRollStartNote != null)
     {
-        Measure measure =  GetNearestMeasure();
-        if (measure == null)
+        
+        // Console.WriteLine($"Currently in roll. RollEnd.X: {currentRollStartNote.RollEnd.X}, HIT_X: {Measure.HIT_X}");
+        if (currentRollStartNote.RollEnd.X > 0 && currentRollStartNote.RollEnd.X <= Measure.HIT_X)
         {
-            return;
-        }
-        Note note = GetNearestNoteFromHitPoint(measure, true);
-        if (note == null)
-        {
-            return;
-        }
-        if (note.rollType != RollType.NONE && note.noteType != NoteType.EndOfRoll)
-        {
-            currentRollType = note.rollType;
-            return;
-        }
-        if (note.rollType is RollType.NONE || note.noteType == NoteType.EndOfRoll)
-        {
+            // Console.WriteLine("Roll ended!");
             currentRollType = RollType.NONE;
+            currentRollStartNote = null;
+        }
+        else
+        {
+            // Console.WriteLine("Still in roll, returning");
+            return;
         }
     }
+
+    Note note = GetNearestNoteAcrossAllMeasures(false, true);
+    if (note == null)
+    {
+        // Console.WriteLine($"No note found, count: {noNoteFoundCount}");
+        return;
+    }
+
+// And reset it when a roll is found:
+    // Console.WriteLine($"Found note at X: {note.X}, Type: {note.noteType}, NoNoteFound frames before: {noNoteFoundCount}");
+    if (note == currentRollStartNote)
+    {
+        // Console.WriteLine("Same note as current roll start, returning");
+        return;
+    }
+
+    bool isRollNote = (note.rollType != RollType.NONE) || 
+                      note.noteType is NoteType.Balloon or NoteType.Drumroll or NoteType.BigDrumroll;
+    
+    // Console.WriteLine($"Is roll note: {isRollNote}");
+    
+    if (isRollNote)
+    {
+        // Console.WriteLine($"Roll triggered at note.X={note.X}, HIT_X={Measure.HIT_X}, diff={Measure.HIT_X - note.X}, {note.noteType}");
+        // Console.WriteLine("Starting roll!");
+        currentRollType = note.rollType;
+        
+        currentRollStartNote = note;
+        // Console.WriteLine($"Roll type set to: {currentRollType}");
+    }
+
+    if (note.noteType is NoteType.EndOfRoll)
+    {
+        currentRollType = RollType.NONE;
+        currentRollStartNote = null;
+    }
+    // Console.WriteLine("=== UpdateCurrentRollType END ===");
+}
     
     private void UpdateAutoPlayHit(List<Note> notes, Note? noteToHit, Measure measure)
     {
-        if (currentRollType != RollType.NONE)
+        if (currentRollType != RollType.NONE || currentRollStartNote != null)
         {
             if (lastRollHitTime < 0)
             {
@@ -823,6 +1013,8 @@ public class SongPlaying : Screen
         UpdateLaneAnimations();
         DrawPlayingZone(0, 276 - 72);
         DrawForegroundAnimations();
+        UpdateOnTopAnimations();
+        DrawOnTopAnimations();
         UpdateBackgroundAnimations();
     }
 
@@ -869,7 +1061,7 @@ public class SongPlaying : Screen
                     animationKa.StartAnimation();
                     break;
             }
-            StopMotionSingleImageAnimation animation2 = new StopMotionSingleImageAnimation(textures["Explosion"], framesSrc, 474, 274, 0.125, 256 / 1.25f, 256 / 1.25f);
+            StopMotionSingleImageAnimation animation2 = new StopMotionSingleImageAnimation(textures["Explosion"], framesSrc, 474, 274, 0.125, 256 / 1.25f, 256 / 1.25f, new Color(255f, 255f, 255f, 0.85f), BlendMode.Additive);
             runningForegroundAnimations.Add(animation2);
             animation2.StartAnimation();
 
@@ -877,13 +1069,13 @@ public class SongPlaying : Screen
             {
                 ScaleAnimation scaleAnimation =
                     new ScaleAnimation(textures["BigNoteFireworks"], 575, 375, 0, 0.8, 0.125);
-                Console.WriteLine("added Fireworks");
+                // Console.WriteLine("added Fireworks");
                 runningForegroundAnimations.Add(scaleAnimation);
                 scaleAnimation.StartAnimation();
             }
             
             CircleAnimation circleAnimation = new CircleAnimation(noteToHit.Notes, noteToHit.GetNoteTextureSrc(),
-                (int) Measure.HIT_X, 350, 1780, 200, 300, 0.6, 1.3f, 1.3f);
+                (int) Measure.HIT_X, 350, 1780, 150, 300, 0.6, 1.3f, 1.3f);
             runningForegroundAnimations.Add(circleAnimation);
     }
     
@@ -897,16 +1089,16 @@ public class SongPlaying : Screen
         double songTime = Raylib.GetMusicTimePlayed(song);
         if (measure == null)
         {
-            Console.WriteLine("no nearest measure found");
+            // Console.WriteLine("no nearest measure found");
             return;
         }
 
         if (measure.activeNotes.Count == 0)
         {
-            Console.WriteLine("no active notes found");
+            // Console.WriteLine("no active notes found");
             return;
         }
-        Console.WriteLine(Math.Abs(songTime - (noteToHit.timeInMeasure + measure.songStartTime)));
+        // Console.WriteLine(Math.Abs(songTime - (noteToHit.timeInMeasure + measure.songStartTime)));
         double noteGreatTimeInterval = greatTimeInterval + 60 / noteToHit.BPM * 0.001;
         double noteOkTimeInterval = okTimeInterval + 60 / noteToHit.BPM * 0.001;
         double noteBadTimeInterval = badTimeInterval + 60 / noteToHit.BPM * 0.001;
@@ -1061,7 +1253,7 @@ public class SongPlaying : Screen
         // Update and cleanup
         List<Measure> finishedMeasures = new List<Measure>();
         Dictionary<Measure, List<Note>> removedNotes = new  Dictionary<Measure, List<Note>>();
-        Measure nearestMeasure = GetNearestMeasure();
+        Measure nearestMeasure = GetNearestMeasure(false);
         if (nearestMeasure == null)
         {
             return;
@@ -1092,9 +1284,9 @@ public class SongPlaying : Screen
             UpdateAutoPlayHit(kvp.Value, noteToHit, kvp.Key);
         }
 
-        if (currentRollType != RollType.NONE)
+        if (currentRollType != RollType.NONE || currentRollStartNote != null)
         {
-            UpdateAutoPlayHit(null, GetNearestNoteFromHitPoint(GetNearestMeasure(), false),  GetNearestMeasure());
+            UpdateAutoPlayHit(null, null, null);
         }
         foreach (KeyValuePair<Measure, List<Note>> kvp in removedNotes)
         {

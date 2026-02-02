@@ -54,7 +54,6 @@ public class StopMotionSeparateImageAnimation : Animation
     {
         if (currentFrame.Id == 0)  // Unloaded textures have id = 0
         {
-            Console.WriteLine("WARNING: Trying to draw unloaded texture!");
             return;
         }
         if (!isAnimating)

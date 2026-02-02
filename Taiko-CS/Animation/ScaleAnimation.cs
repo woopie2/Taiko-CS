@@ -31,7 +31,6 @@ public class ScaleAnimation : Animation
     
     public override void UpdateAnimation()
     {
-        Console.WriteLine($"UpdateAnimation - ID: {GetHashCode()}, isAnimating: {isAnimating}, currentScale: {currentScale}");
     
         if (!isAnimating)
         {
@@ -41,14 +40,12 @@ public class ScaleAnimation : Animation
         if (time < 0)
         {
             time = Raylib.GetTime();
-            Console.WriteLine($"STARTED - ID: {GetHashCode()} at time: {time}");
         }
 
         double elapsed = Raylib.GetTime() - time;
         double progress = Math.Min(elapsed / timeInterval * 0.1, 1.0);
         currentScale = baseScale + (finalScale - baseScale) * progress;
-    
-        Console.WriteLine($"ID: {GetHashCode()}, Scale: {currentScale}, Progress: {progress}");
+        
     }
 
     public override void StartAnimation()
@@ -58,7 +55,6 @@ public class ScaleAnimation : Animation
 
     public override void Draw()
     {
-        Console.WriteLine($"Texture ID: {texture.Id}, Width: {texture.Width}, Height: {texture.Height}");
     
         float drawX = (float)(x - texture.Width * currentScale / 2);
         float drawY = (float)(y - texture.Height * currentScale / 2);
