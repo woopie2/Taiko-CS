@@ -1,3 +1,4 @@
+using System.Numerics;
 using Raylib_cs;
 
 namespace Taiko_CS.Animation;
@@ -12,6 +13,7 @@ public class StopMotionSeparateImageAnimation : Animation
     private int y;
     private double currentTime = -1;
     private bool isAnimating = false;
+    private double scale = 1;
     public StopMotionSeparateImageAnimation(List<Texture2D> frames, double duration, int x, int y)
     {
         this.frames = frames;
@@ -19,6 +21,16 @@ public class StopMotionSeparateImageAnimation : Animation
         currentFrame = frames[0];
         this.x = x;
         this.y = y;
+    }
+    
+    public StopMotionSeparateImageAnimation(List<Texture2D> frames, double duration, int x, int y, double scale)
+    {
+        this.frames = frames;
+        timeInterval =  duration / frames.Count;
+        currentFrame = frames[0];
+        this.x = x;
+        this.y = y;
+        this.scale = scale;
     }
     
     public override void UpdateAnimation()
@@ -60,7 +72,7 @@ public class StopMotionSeparateImageAnimation : Animation
         {
             return;
         }
-        Raylib.DrawTexture(currentFrame, x, y, Color.White);
+        Raylib.DrawTextureEx(currentFrame, new Vector2(x, y), 0, (float)scale, Color.White);
     }
 
     public override bool IsFinish()

@@ -5008,3 +5008,66 @@ D:/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Dragoon/Dragoon.tja
 /home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Calamity Fortune/Calamity Fortune.tja
 /home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Dogbite/Dogbite.ogg
 /home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Dogbite/Dogbite.tja
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Leviathan/Leviathan.ogg
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Leviathan/Leviathan.tja
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Masakari Blade/Masakari Blade.ogg
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Masakari Blade/Masakari Blade.tja
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Hurtling Boys/Hurtling Boys.ogg
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Hurtling Boys/Hurtling Boys.tja
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Yuugen no Ran/Yuugen no Ran.ogg
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Yuugen no Ran/Yuugen no Ran.tja
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Souryuu no Ran/Souryuu no Ran.ogg
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Souryuu no Ran/Souryuu no Ran.tja
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/10.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/100.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/1000.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/1100.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/1200.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/1300.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/1400.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/1500.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/1600.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/1700.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/1800.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/1900.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/200.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/2000.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/2100.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/2200.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/2300.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/2400.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/2500.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/2600.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/2700.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/2800.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/2900.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/30.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/300.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/3000.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/3100.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/3200.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/3300.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/3400.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/3500.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/3600.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/3700.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/3800.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/3900.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/400.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/4000.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/4100.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/4200.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/4300.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/4400.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/4500.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/4600.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/4700.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/4800.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/4900.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/50.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/500.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/5000.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/600.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/700.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/800.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/900.wav

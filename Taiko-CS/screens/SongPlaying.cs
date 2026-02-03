@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Globalization;
 using System.Numerics;
 using Raylib_cs;
 using Taiko_CS.Enums;
@@ -22,6 +23,7 @@ public class SongPlaying : Screen
     private List<Animation.Animation> runningBackgroundAnimations = new List<Animation.Animation>();
     private List<Animation.Animation> runningLaneAnimation = new List<Animation.Animation>();
     private List<Animation.Animation> runningOnTopAnimation = new List<Animation.Animation>();
+    private Animation.Animation currentComboTextAnimation = null;
     private Dictionary<int, int> hexAnimationSprites = new Dictionary<int, int>();
     private bool areAnimationsInitialized = false;
     private int gaugePercent = 0;
@@ -44,11 +46,18 @@ public class SongPlaying : Screen
     private double badTimeInterval;
     private List<Texture2D> greatHitAnimFrames;
     private List<Texture2D> goodHitAnimFrames;
+    private double combo = 0;
+    private int[] balloonCount;
+    private int balloonIndex = 0;
 
     public SongPlaying(Difficulty difficulty, ChartData chartData)
     {
         this.difficulty = difficulty;
         this.chartData = chartData;
+        if (chartData.ContainsField("BALLOON"))
+        {
+            balloonCount = chartData.GetField("BALLOON").Split(',').Select(int.Parse).ToArray();
+        }
         LoadTextures();
         LoadSounds();
         Raylib.PlayMusicStream(song);
@@ -103,14 +112,21 @@ public class SongPlaying : Screen
         LoadTexture("LaneKa", "12_Lane/Blue.png");
         LoadTexture("NoteEndExplosion", "7_Gauge/1P_Explosion.png");
         LoadTexture("BigNoteFireworks", "10_Effects/Hit/Explosion_Big.png");
-        greatHitAnimFrames = LoadFrames("./ressources/Graphics/5_Game/10_Effects/Hit/Great", 14);
-        goodHitAnimFrames = LoadFrames("./ressources/Graphics/5_Game/10_Effects/Hit/Good", 14);
+        LoadTexture("Combo", "6_Taiko/Combo.png", TextureFilter.Bilinear);
+        LoadTexture("SilverCombo", "6_Taiko/Combo_Midium.png", TextureFilter.Bilinear);
+        LoadTexture("GoldCombo", "6_Taiko/Combo_Big.png", TextureFilter.Bilinear);
+        greatHitAnimFrames = LoadFrames("./ressources/Graphics/5_Game/10_Effects/Hit/Great", 14, TextureFilter.Bilinear);
+        goodHitAnimFrames = LoadFrames("./ressources/Graphics/5_Game/10_Effects/Hit/Good", 14,  TextureFilter.Bilinear);
     }
 
     public override void LoadSounds()
     {
         LoadSound("Don", "Taiko/dong.wav", 0.25f);
         LoadSound("Ka", "Taiko/ka.wav", 0.25f);
+        foreach (string fileName in Directory.GetFiles("./ressources/Sounds/Combo_1P", "*.wav").Select(Path.GetFileName))
+        {
+            LoadSound(Path.GetFileNameWithoutExtension(fileName), $"Combo_1P/{fileName}", 0.5f);
+        }
         song = Raylib.LoadMusicStream($"{chartData.GetField("LOCATION")}/{chartData.GetField("WAVE")}");
     }
 
@@ -824,11 +840,15 @@ public class SongPlaying : Screen
 
                 if (note.X <= 0)
                     continue;
-
                 if (isAfterHitPoint)
                 {
+                    
                     if (note.X <= Measure.HIT_X)
                     {
+                        if (note.noteType is NoteType.BigDrumroll)
+                        {
+                            Console.WriteLine(note.X);
+                        }
                         if (nearest == null || note.X > nearest.X)
                             nearest = note;
                     }
@@ -849,41 +869,15 @@ public class SongPlaying : Screen
     private void UpdateCurrentRollType()
 {
     // Console.WriteLine("=== UpdateCurrentRollType START ===");
-    
-    if (currentRollStartNote != null)
-    {
-        
-        // Console.WriteLine($"Currently in roll. RollEnd.X: {currentRollStartNote.RollEnd.X}, HIT_X: {Measure.HIT_X}");
-        if (currentRollStartNote.RollEnd.X > 0 && currentRollStartNote.RollEnd.X <= Measure.HIT_X)
-        {
-            // Console.WriteLine("Roll ended!");
-            currentRollType = RollType.NONE;
-            currentRollStartNote = null;
-        }
-        else
-        {
-            // Console.WriteLine("Still in roll, returning");
-            return;
-        }
-    }
 
-    Note note = GetNearestNoteAcrossAllMeasures(false, true);
+    Note note = GetNearestNoteAcrossAllMeasures(true, true);
     if (note == null)
     {
         // Console.WriteLine($"No note found, count: {noNoteFoundCount}");
         return;
     }
 
-// And reset it when a roll is found:
-    // Console.WriteLine($"Found note at X: {note.X}, Type: {note.noteType}, NoNoteFound frames before: {noNoteFoundCount}");
-    if (note == currentRollStartNote)
-    {
-        // Console.WriteLine("Same note as current roll start, returning");
-        return;
-    }
-
-    bool isRollNote = (note.rollType != RollType.NONE) || 
-                      note.noteType is NoteType.Balloon or NoteType.Drumroll or NoteType.BigDrumroll;
+    bool isRollNote = note.noteType is NoteType.Balloon or NoteType.Drumroll or NoteType.BigDrumroll;
     
     // Console.WriteLine($"Is roll note: {isRollNote}");
     
@@ -897,7 +891,7 @@ public class SongPlaying : Screen
         // Console.WriteLine($"Roll type set to: {currentRollType}");
     }
 
-    if (note.noteType is NoteType.EndOfRoll)
+    if (note.noteType is NoteType.EndOfRoll || note.rollType == RollType.NONE)
     {
         currentRollType = RollType.NONE;
         currentRollStartNote = null;
@@ -907,7 +901,7 @@ public class SongPlaying : Screen
     
     private void UpdateAutoPlayHit(List<Note> notes, Note? noteToHit, Measure measure)
     {
-        if (currentRollType != RollType.NONE || currentRollStartNote != null)
+        if (currentRollType != RollType.NONE || currentRollStartNote != null && currentRollStartNote.RollEnd.X > 0 && currentRollStartNote.RollEnd.X > Measure.HIT_X)
         {
             if (lastRollHitTime < 0)
             {
@@ -998,6 +992,42 @@ public class SongPlaying : Screen
             
     }
     
+    private void DrawCombo(int x, int y)
+    {
+        if (combo < 10)
+        {
+            return;
+        }
+        string comboText = combo.ToString();
+        List<Rectangle> digitsSrc = new List<Rectangle>();
+        foreach (char c in comboText)
+        {
+            int digit = int.Parse(c.ToString());
+            Rectangle src = new Rectangle(digit * 40, 0, 40, 48);
+            digitsSrc.Add(src);
+        }
+        double totalWidth = digitsSrc.Sum(r => r.Width * 1.5);
+        double currentX = 0;
+        for (int i = 0; i < digitsSrc.Count; i++)
+        {
+            Texture2D texture = new Texture2D();
+            if (combo < 50)
+            {
+                texture = textures["Combo"];
+            } else if (combo <= 99)
+            {
+                texture = textures["SilverCombo"];
+            }
+            else
+            {
+                texture = textures["GoldCombo"];
+            }
+            Raylib.DrawTexturePro(texture, digitsSrc[i], new Rectangle((float) ((x + currentX + textures["Taiko"].Width / 2.0) - (totalWidth / 2)) , y + 42, 40 * 1.5f, 48 * 1.5f), Vector2.Zero, 0, Color.White);
+            currentX += 35 * 1.5;
+        }
+    }
+    
+    
     public override void Draw()
     {
         if (!areAnimationsInitialized)
@@ -1015,12 +1045,13 @@ public class SongPlaying : Screen
         DrawForegroundAnimations();
         UpdateOnTopAnimations();
         DrawOnTopAnimations();
+        DrawCombo(0 + 499 - 180 - 10, 276 - 72 + textures["Taiko"].Height / 2);
         UpdateBackgroundAnimations();
     }
 
     private void PlayHitAnimation(Note noteToHit)
     {
-        StopMotionSeparateImageAnimation animation = new StopMotionSeparateImageAnimation(greatHitAnimFrames, 1.5, 385, 180);
+        StopMotionSeparateImageAnimation animation = new StopMotionSeparateImageAnimation(greatHitAnimFrames, 1.5, 410, 210, 1.3);
             runningLaneAnimation.Add(animation);
             animation.StartAnimation();
             List<Rectangle> framesSrc = new List<Rectangle>();
@@ -1105,15 +1136,25 @@ public class SongPlaying : Screen
         if (Math.Abs(songTime - (noteToHit.timeInMeasure + measure.songStartTime)) <= noteGreatTimeInterval)
         {
             PlayHitAnimation(noteToHit);
+            combo++;
+            if (sounds.ContainsKey(combo.ToString()))
+            {
+                Raylib.PlaySound(sounds[combo.ToString()]);
+            }
 
         } else if (Math.Abs(songTime - (noteToHit.timeInMeasure + measure.songStartTime)) <= noteOkTimeInterval)
         {
-            StopMotionSeparateImageAnimation animation = new StopMotionSeparateImageAnimation(goodHitAnimFrames, 1.5, 385, 180);
+            StopMotionSeparateImageAnimation animation = new StopMotionSeparateImageAnimation(goodHitAnimFrames, 1.5, 410, 210, 1.3);
             runningLaneAnimation.Add(animation);
             animation.StartAnimation();
+            combo++;
+            if (sounds.ContainsKey(combo.ToString()))
+            {
+                Raylib.PlaySound(sounds[combo.ToString()]);
+            }
         } else if (Math.Abs(songTime - (noteToHit.timeInMeasure + measure.songStartTime)) <= noteBadTimeInterval)
         {
-            
+            combo = 0;
         }
     }
     
@@ -1302,6 +1343,18 @@ public class SongPlaying : Screen
         for (int i = 0; i <= frameCount; i++)
         {
             frames.Add(Raylib.LoadTexture($"{folderPath}/{i}.png"));
+        }
+
+        return frames;
+    }
+    
+    private List<Texture2D> LoadFrames(string folderPath, int frameCount, TextureFilter textureFilter)
+    {
+        List<Texture2D> frames = new List<Texture2D>();
+        for (int i = 0; i <= frameCount; i++)
+        {
+            frames.Add(Raylib.LoadTexture($"{folderPath}/{i}.png"));
+            Raylib.SetTextureFilter(frames[^1], textureFilter);
         }
 
         return frames;

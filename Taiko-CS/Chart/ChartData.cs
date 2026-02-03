@@ -22,4 +22,9 @@ public class ChartData
     {
         return fields[fieldName];
     }
+
+    public bool ContainsField(string fieldName)
+    {
+        return this.fields.ContainsKey(fieldName);
+    }
 }
