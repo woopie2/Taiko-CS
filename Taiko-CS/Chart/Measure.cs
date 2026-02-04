@@ -18,7 +18,7 @@ public class Measure
     public const double SPAWN_X = 1920;           // Notes apparaissent hors écran à droite
     public const double HIT_X = 509;              // Point de frappe
     public double timeSignature;
-    public double pixelPerBeat = 300;
+    public double pixelPerBeat = 318;
 
     public Measure(double timeLength, double songStartTime, double timeSignature, double BPM)
     {
@@ -82,55 +82,51 @@ public class Measure
             {
                 if (notes.Count == 1)
                 {
-                    double startX = note.noteType is NoteType.Drumroll or NoteType.BigDrumroll ?  note.X + note.GetNoteTextureSrc().Width / 2 * 1.3 : notes[0].X;
+                    double startX = note.noteType is NoteType.Drumroll or NoteType.BigDrumroll ?  note.X + note.GetNoteTextureSrc().Width / 2 * 1.5 : notes[0].X;
                     double endX = note.RollEnd.X is > 0 and <= SPAWN_X
                         ? note.RollEnd.X
-                        : SPAWN_X + Note.GetRollSrc(note.rollType).Width * 1.3;
-                    for (double x = startX;
-                         x + Note.GetRollSrc(note.rollType).Width * 1.3 < endX;
-                         x += 1)
-                    {
-                        Raylib.DrawTexturePro(note.Notes, Note.GetRollSrc(note.rollType),
-                            new Rectangle((float)x, y - (float)(Note.GetRollSrc(note.rollType).Height * 1.3 / 2) + 50,
-                                (float)(Note.GetRollSrc(note.rollType).Width * 1.3),
-                                (float)(Note.GetRollSrc(note.rollType).Height * 1.3)), Vector2.Zero, 0, Color.White);
-                    }
+                        : SPAWN_X + Note.GetRollSrc(note.rollType).Width * 1.5;
+                    Raylib.DrawTexturePro(
+                        note.Notes,
+                        Note.GetRollSrc(note.rollType),
+                        new Rectangle((float)startX,
+                            y - (float)(Note.GetRollSrc(note.rollType).Height * 1.5 / 2) + 50,
+                            (float)endX-(float)startX,
+                            (float)(Note.GetRollSrc(note.rollType).Height * 1.5)),
+                        Vector2.Zero, 0, Color.White
+                    );
                 }
                 else if (notes.Count > 1)
                 {
     
                     Note? endOfRoll = GetNearestEndOfRoll(notes.IndexOf(note));
-                    double rollWidth = Note.GetRollSrc(note.rollType).Width * 1.3;
 
                     double startX;
                     if (note.RollStart != null && note.RollStart.X > 0)
                     {
-                        startX = note.RollStart.X + note.RollStart.GetNoteTextureSrc().Width / 2 * 1.3;
-                    }
-                    else
+                        startX = (note.RollStart.X + note.RollStart.GetNoteTextureSrc().Width* 1.5);   
+                    } else
                     {
                         startX = 0;
                     }
 
                     double endX = endOfRoll != null && activeNotes.Contains(endOfRoll)
-                        ? endOfRoll.X
+                        ? endOfRoll.X - (endOfRoll.GetNoteTextureSrc().Width * 1.5 / 2) + 50
                         : GetMeasureEndX(songTime, note.ScrollSpeed);
 
-                    // Draw from startX all the way to endX
-                    for (double x = startX; x < endX; x += rollWidth)
+                    if (startX < endX)
                     {
-                        double currentWidth = Math.Min(rollWidth, endX - x);
-        
                         Raylib.DrawTexturePro(
                             note.Notes,
                             Note.GetRollSrc(note.rollType),
-                            new Rectangle((int)x,
-                                y - (float)(Note.GetRollSrc(note.rollType).Height * 1.3 / 2) + 50,
-                                (float)currentWidth,
-                                (float)(Note.GetRollSrc(note.rollType).Height * 1.3)),
+                            new Rectangle((float)startX,
+                                y - (float)(Note.GetRollSrc(note.rollType).Height * 1.5 / 2) + 50,
+                                (float)endX-(float)startX,
+                                (float)(Note.GetRollSrc(note.rollType).Height * 1.5)),
                             Vector2.Zero, 0, Color.White
                         );
                     }
+                    
                 }
             }
 
@@ -139,7 +135,6 @@ public class Measure
                 drawLater.Add(note);
                 continue;
             }
-
             if (note.noteType != NoteType.None)
             {
                 note.Draw(y, barLine);
@@ -168,13 +163,21 @@ public class Measure
                 continue;
 
             note.X = notePos + HIT_X;
+            if (note.noteType == NoteType.EndOfRoll && note.rollType != RollType.BALOON && note.RollStart != null)
+            {
+                double minRollLength = 130; // Minimum pixels for roll tail
+                double calculatedEnd = notePos + HIT_X;
+                double minEnd = note.RollStart.X + note.RollStart.GetNoteTextureSrc().Width * 1.5+ minRollLength;
+    
+                note.X = Math.Max(calculatedEnd, minEnd);
+            }
             if (note.noteType is NoteType.Balloon && note.X <= HIT_X)
             {
                 note.X = HIT_X;
             }
 
             // Remove note when past hit time
-            if (songStartTime + note.timeInMeasure < songTime && note.rollType == RollType.NONE && note.noteType is not (NoteType.Drumroll or NoteType.BigDrumroll or NoteType.Balloon))
+            if (songStartTime + note.timeInMeasure < songTime && note.rollType == RollType.NONE && note.noteType is not (NoteType.Drumroll or NoteType.BigDrumroll or NoteType.Balloon or NoteType.EndOfRoll))
             {
                 note.X = 0;
                 removedNotesResult.Add(note);

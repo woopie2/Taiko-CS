@@ -54,7 +54,7 @@ public class SongPlaying : Screen
     {
         this.difficulty = difficulty;
         this.chartData = chartData;
-        if (chartData.ContainsField("BALLOON"))
+        if (chartData.ContainsField("BALLOON") && chartData.GetField("BALLOON") != "")
         {
             balloonCount = chartData.GetField("BALLOON").Split(',').Select(int.Parse).ToArray();
         }
@@ -115,6 +115,7 @@ public class SongPlaying : Screen
         LoadTexture("Combo", "6_Taiko/Combo.png", TextureFilter.Bilinear);
         LoadTexture("SilverCombo", "6_Taiko/Combo_Midium.png", TextureFilter.Bilinear);
         LoadTexture("GoldCombo", "6_Taiko/Combo_Big.png", TextureFilter.Bilinear);
+        LoadTexture("ComboText", "6_Taiko/Combo_Text.png", TextureFilter.Bilinear);
         greatHitAnimFrames = LoadFrames("./ressources/Graphics/5_Game/10_Effects/Hit/Great", 14, TextureFilter.Bilinear);
         goodHitAnimFrames = LoadFrames("./ressources/Graphics/5_Game/10_Effects/Hit/Good", 14,  TextureFilter.Bilinear);
     }
@@ -424,7 +425,7 @@ public class SongPlaying : Screen
     private void DrawHitZone(int x, int y)
     {
         Rectangle src = new Rectangle(11, 12, 105, 105);
-        Raylib.DrawTexturePro(textures["Notes"], src, new Rectangle(x, y - src.Height / 2 * 1.3f + 50, src.Width * 1.3f, src.Height * 1.3f), Vector2.Zero, 0, Color.White);
+        Raylib.DrawTexturePro(textures["Notes"], src, new Rectangle(x, y - src.Height / 2 * 1.5f + 50, src.Width * 1.5f, src.Height * 1.5f), Vector2.Zero, 0, Color.White);
     }
     
     private void DrawDifficultyIcon(int x, int y)
@@ -845,10 +846,6 @@ public class SongPlaying : Screen
                     
                     if (note.X <= Measure.HIT_X)
                     {
-                        if (note.noteType is NoteType.BigDrumroll)
-                        {
-                            Console.WriteLine(note.X);
-                        }
                         if (nearest == null || note.X > nearest.X)
                             nearest = note;
                     }
@@ -868,8 +865,13 @@ public class SongPlaying : Screen
     }
     private void UpdateCurrentRollType()
 {
-    // Console.WriteLine("=== UpdateCurrentRollType START ===");
-
+    if (currentRollStartNote != null && currentRollStartNote.RollEnd != null && currentRollStartNote.RollEnd.X > 0 &&
+        currentRollStartNote.RollEnd.X <= Measure.HIT_X)
+    {
+        currentRollType = RollType.NONE;
+        currentRollStartNote = null;
+        return;
+    } 
     Note note = GetNearestNoteAcrossAllMeasures(true, true);
     if (note == null)
     {
@@ -877,10 +879,7 @@ public class SongPlaying : Screen
         return;
     }
 
-    bool isRollNote = note.noteType is NoteType.Balloon or NoteType.Drumroll or NoteType.BigDrumroll;
-    
-    // Console.WriteLine($"Is roll note: {isRollNote}");
-    
+    bool isRollNote = note.noteType is NoteType.Balloon or NoteType.Drumroll or NoteType.BigDrumroll || note.rollType != RollType.NONE;
     if (isRollNote)
     {
         // Console.WriteLine($"Roll triggered at note.X={note.X}, HIT_X={Measure.HIT_X}, diff={Measure.HIT_X - note.X}, {note.noteType}");
@@ -888,10 +887,9 @@ public class SongPlaying : Screen
         currentRollType = note.rollType;
         
         currentRollStartNote = note;
-        // Console.WriteLine($"Roll type set to: {currentRollType}");
     }
-
-    if (note.noteType is NoteType.EndOfRoll || note.rollType == RollType.NONE)
+    
+    if ((note.noteType is NoteType.EndOfRoll || note.rollType == RollType.NONE))
     {
         currentRollType = RollType.NONE;
         currentRollStartNote = null;
@@ -1045,13 +1043,14 @@ public class SongPlaying : Screen
         DrawForegroundAnimations();
         UpdateOnTopAnimations();
         DrawOnTopAnimations();
-        DrawCombo(0 + 499 - 180 - 10, 276 - 72 + textures["Taiko"].Height / 2);
+        DrawCombo(0 + 499 - 180 - 10, 276 - 100 + textures["Taiko"].Height / 2);
+        // Raylib.DrawTexture();
         UpdateBackgroundAnimations();
     }
 
     private void PlayHitAnimation(Note noteToHit)
     {
-        StopMotionSeparateImageAnimation animation = new StopMotionSeparateImageAnimation(greatHitAnimFrames, 1.5, 410, 210, 1.3);
+        StopMotionSeparateImageAnimation animation = new StopMotionSeparateImageAnimation(greatHitAnimFrames, 1.5, 380, 180, 1.5);
             runningLaneAnimation.Add(animation);
             animation.StartAnimation();
             List<Rectangle> framesSrc = new List<Rectangle>();
@@ -1106,7 +1105,7 @@ public class SongPlaying : Screen
             }
             
             CircleAnimation circleAnimation = new CircleAnimation(noteToHit.Notes, noteToHit.GetNoteTextureSrc(),
-                (int) Measure.HIT_X, 350, 1780, 150, 300, 0.6, 1.3f, 1.3f);
+                (int) Measure.HIT_X, 350, 1780, 150, 300, 0.6, 1.5f, 1.5f);
             runningForegroundAnimations.Add(circleAnimation);
     }
     
@@ -1144,7 +1143,7 @@ public class SongPlaying : Screen
 
         } else if (Math.Abs(songTime - (noteToHit.timeInMeasure + measure.songStartTime)) <= noteOkTimeInterval)
         {
-            StopMotionSeparateImageAnimation animation = new StopMotionSeparateImageAnimation(goodHitAnimFrames, 1.5, 410, 210, 1.3);
+            StopMotionSeparateImageAnimation animation = new StopMotionSeparateImageAnimation(goodHitAnimFrames, 1.5, 410, 210, 1.5);
             runningLaneAnimation.Add(animation);
             animation.StartAnimation();
             combo++;

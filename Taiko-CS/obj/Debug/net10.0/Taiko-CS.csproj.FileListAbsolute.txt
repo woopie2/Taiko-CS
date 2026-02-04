@@ -5071,3 +5071,11 @@ D:/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Dragoon/Dragoon.tja
 /home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/700.wav
 /home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/800.wav
 /home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/ressources/Sounds/Combo_1P/900.wav
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Behemoth/Behemoth.ogg
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Behemoth/Behemoth.tja
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Caribbean Knight/Caribbean Knight.ogg
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Caribbean Knight/Caribbean Knight.tja
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Xa/Xa.ogg
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/Xa/Xa.tja
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/8OROCHI/8OROCHI.ogg
+/home/woopie2/Documents/Projet c#/Taiko-CS/Taiko-CS/bin/Debug/net10.0/Songs/8OROCHI/8OROCHI.tja

@@ -37,7 +37,10 @@ public class Chart
                 measure.GetNotes()[i].noteType == NoteType.Drumroll ||
                 measure.GetNotes()[i].noteType == NoteType.BigDrumroll)
             {
-                return i;
+                if (measure.GetNotes()[i].RollEnd == null)
+                {
+                    return i;
+                }
             }
         }
 
@@ -263,7 +266,6 @@ public class Chart
             // Parsing notes
             if (numbers.Contains(line[0]))
             {
-                Console.WriteLine(currentBPM);
                 int i = 0;
                 foreach (char c in measureContent)
                 {
@@ -281,26 +283,36 @@ public class Chart
                     currentMeasure.AddNote(note);
                     if (noteType == NoteType.EndOfRoll)
                     {
+                        Console.WriteLine($"=== Processing EndOfRoll #{chartData.measures.Count}.{currentMeasure.GetNotes().Count} ===");
                         currentRollType = RollType.NONE;
                         currentRollStart = null;
                         Measure startRollMeasure = GetRollStartMeasure(chartData, currentMeasure);
+                        Console.WriteLine($"startRollMeasure == currentMeasure: {startRollMeasure == currentMeasure}");
+
                         if (startRollMeasure == currentMeasure)
                         {
-                            Console.WriteLine($"Processing EndOfRoll at index {currentMeasure.GetNotes().IndexOf(note)}, roll starts at index {GetNearestRollStart(currentMeasure,
-                                currentMeasure.GetNotes().IndexOf(note))}");
+                            int endIndex = currentMeasure.GetNotes().Count - 1;
+                            int startIndex = GetNearestRollStart(currentMeasure, endIndex - 1);
+                            Console.WriteLine($"EndOfRoll at index {endIndex}, RollStart found at index {startIndex}");
+                            Console.WriteLine($"Setting RollEnd on notes from index {startIndex} to {endIndex}");
+                            for (int debugIdx = 0; debugIdx < currentMeasure.GetNotes().Count; debugIdx++)
+                            {
+                                var n = currentMeasure.GetNotes()[debugIdx];
+                                Console.WriteLine($"  [{debugIdx}] Type: {n.noteType}, RollEnd before: {(n.RollEnd != null ? "SET" : "null")}");
+                            }
                             foreach (Note n in currentMeasure.GetNotes())
                             {
-                                if (currentMeasure.GetNotes().IndexOf(n) < GetNearestRollStart(currentMeasure,
-                                        currentMeasure.GetNotes().IndexOf(note)) || currentMeasure.GetNotes().IndexOf(n) > currentMeasure.GetNotes().IndexOf((note)))
+                                int nIndex = currentMeasure.GetNotes().IndexOf(n);
+                                if (nIndex < startIndex || nIndex > endIndex)
                                 {
                                     continue;
                                 }
                                 n.RollEnd = note;
-                                Console.WriteLine($"  Setting RollEnd on note at index {currentMeasure.GetNotes().IndexOf(n)} (type: {n.noteType}, rollType: {n.rollType})");
                             }
                         }
                         else
                         {
+                            Console.WriteLine("Roll spans across measures");
                             for (int mIndex = chartData.measures.IndexOf(startRollMeasure); mIndex < chartData.measures.Count; mIndex++)
                             {
                                 foreach (Note n in chartData.measures[mIndex].GetNotes())
@@ -312,11 +324,12 @@ public class Chart
                                     n.RollEnd = note;
                                 }
 
-                                foreach (Note n in currentMeasure.GetNotes())
-                                {
-                                    n.RollEnd = note;
-                                }
+                                
                             }   
+                            foreach (Note n in currentMeasure.GetNotes())
+                            {
+                                n.RollEnd = note;
+                            }
                         }
                         
                     }
@@ -355,7 +368,6 @@ public class Chart
                     foreach (Note note in currentMeasure.GetNotes())
                     {
                         secondsPerMeasure = secondsPerMeasures[index]; 
-                        Console.WriteLine(secondsPerMeasure);
                         note.timeInMeasure = lastMilInMeasure;
                         lastMilInMeasure += secondsPerMeasure / currentMeasure.GetNotes().Count;
                         index++;
@@ -383,7 +395,6 @@ public class Chart
 
                     currentMeasure.songStartTime = measureStartTime;
                     currentMeasure.timeLength = lastMilInMeasure;
-                    Console.WriteLine($"mesureSartTime : {measureStartTime} - measureLength {currentMeasure.timeLength}");
                     chartData.AddMeasure(currentMeasure);
 
                     // Création de la nouvelle mesure

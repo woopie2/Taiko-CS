@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.ComponentModel;
+using System.Numerics;
 using Raylib_cs;
 using Taiko_CS.Enums;
 
@@ -31,7 +32,7 @@ public class Note
     public RollType rollType;
     public double X { get; set; }
     public Note RollStart { get; set; }
-    public Note RollEnd { get; set; }
+    public Note? RollEnd { get; set; }
     public Texture2D Notes { get; set; }
     public double RollStartTime;
     public double RollEndTime;
@@ -107,8 +108,13 @@ public class Note
     {
         if (showBarLine)
         {
-            Raylib.DrawTexturePro(measureBar, new Rectangle(0, 0, 4, 270), new Rectangle((float)(X + GetNoteTextureSrc().Width / 2 * 1.3), y - 40, 4, 200 ), Vector2.Zero, 0, Color.White);
+            Raylib.DrawTexturePro(measureBar, new Rectangle(0, 0, 4, 270), new Rectangle((float)X + 50, y - 40, 4, 200 ), Vector2.Zero, 0, Color.White);
         }
-        Raylib.DrawTexturePro(Notes, this.GetNoteTextureSrc(), new Rectangle((int) X, y - (float) (GetNoteTextureSrc().Height * 1.3 / 2) + 50 , (float) (GetNoteTextureSrc().Width * 1.3), (float) (GetNoteTextureSrc().Height * 1.3)), Vector2.Zero, 0, Color.White);
+
+        if (noteType is NoteType.BigDrumroll or NoteType.Drumroll)
+        {
+            Raylib.DrawTexturePro(Notes, GetRollSrc(rollType), new  Rectangle((float)X + 50, y - (float) (GetRollSrc(rollType).Height * 1.5 / 2) + 50, GetRollSrc(rollType).Width * 1.5f, GetRollSrc(rollType).Height * 1.5f), Vector2.Zero, 0, Color.White);
+        }
+        Raylib.DrawTexturePro(Notes, this.GetNoteTextureSrc(), new Rectangle((float)X - (float) (noteType is NoteType.Balloon ? 0 : GetNoteTextureSrc().Width * 1.5 / 2) + 50, y - (float) (GetNoteTextureSrc().Height * 1.5 / 2) + 50, GetNoteTextureSrc().Width * 1.5f, GetNoteTextureSrc().Height * 1.5f), Vector2.Zero, 0, Color.White);
     }
 }
